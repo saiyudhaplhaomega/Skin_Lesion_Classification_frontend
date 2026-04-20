@@ -100,7 +100,7 @@ User consents → S3 pool → weekly retrain → MLflow review → ECS deploy
 
 ## Research
 
-This project investigates five research questions on HAM10000:
+This project investigates six research questions on HAM10000:
 
 | RQ | Question |
 |---|---|
@@ -109,8 +109,9 @@ This project investigates five research questions on HAM10000:
 | RQ3 | Does backbone architecture (ResNet50 vs EfficientNet-B2 vs MobileNetV2) affect XAI quality independent of accuracy? |
 | RQ4 | Does inter-method disagreement predict model misclassification? |
 | RQ5 | How does Grad-CAM attention evolve during training epochs? |
+| RQ6 | How do models trained on standard archives perform on geographically/demographically diverse populations? |
 
-All experiments tracked in MLflow. Paper figures generated from `ml/notebooks/`.
+Research notebooks in `notebooks/`. All experiments tracked in MLflow. Paper figures generated from `ml/notebooks/`.
 
 ---
 
