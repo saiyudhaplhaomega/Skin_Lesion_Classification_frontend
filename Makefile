@@ -12,16 +12,19 @@ else
 	VENV_PIP    := $(VENV_DIR)/bin/pip
 endif
 
-.PHONY: help setup install install-dev register-kernel run-notebook clean
+.PHONY: help setup install install-dev register-kernel run-notebook train-backbones train-backbones-full train-checkpoints clean
 
 help:
 	@echo "Available targets:"
-	@echo "  setup            - Create skin-lesion-env/ and install dev packages"
-	@echo "  install          - Install production packages only (requirements.txt)"
-	@echo "  install-dev      - Re-sync dev packages (requirements-dev.txt)"
-	@echo "  register-kernel  - Register Jupyter kernel for VS Code"
-	@echo "  run-notebook     - Launch Jupyter Lab"
-	@echo "  clean            - Remove skin-lesion-env/ and __pycache__"
+	@echo "  setup                - Create skin-lesion-env/ and install dev packages"
+	@echo "  install              - Install production packages only (requirements.txt)"
+	@echo "  install-dev          - Re-sync dev packages (requirements-dev.txt)"
+	@echo "  register-kernel      - Register Jupyter kernel for VS Code"
+	@echo "  run-notebook         - Launch Jupyter Lab"
+	@echo "  train-backbones      - Train EfficientNet-B2 + MobileNetV2 (2 epochs, quick)"
+	@echo "  train-backbones-full - Train EfficientNet-B2 + MobileNetV2 (15 epochs, full)"
+	@echo "  train-checkpoints    - Train ResNet50 saving a checkpoint per epoch (for RQ5)"
+	@echo "  clean                - Remove skin-lesion-env/ and __pycache__"
 
 setup:
 	@echo "Creating venv at $(VENV_DIR) ..."
@@ -43,6 +46,15 @@ register-kernel:
 
 run-notebook:
 	$(VENV_PYTHON) -m jupyter lab --notebook-dir=./notebooks
+
+train-backbones:
+	$(VENV_PYTHON) train_backbones.py --epochs 2
+
+train-backbones-full:
+	$(VENV_PYTHON) train_backbones.py --epochs 15
+
+train-checkpoints:
+	$(VENV_PYTHON) train_epoch_checkpoints.py --epochs 10
 
 clean:
 	cmd /c "rmdir /s /q $(VENV_DIR)" 2>nul || rm -rf $(VENV_DIR)
