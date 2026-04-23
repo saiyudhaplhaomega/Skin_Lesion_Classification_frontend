@@ -36,10 +36,16 @@ yarn-error.log*
 coverage/
 .nyc_output/
 
-# Python
+# Python / ML
 skin-lesion-env/
 __pycache__/
 *.py[cod]
 *.pyo
 .ipynb_checkpoints/
 *.egg-info/
+mlruns/
+
+# ML training scripts (not for public release)
+notebooks/
+train_backbones.py
+train_epoch_checkpoints.py
