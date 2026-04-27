@@ -20,6 +20,8 @@ If this file and the root docs disagree, treat the root docs as the production s
 
 The frontend repo is currently a clean Next.js scaffold. Do not rerun `create-next-app` if the scaffold already exists.
 
+Research notebooks and training scripts now belong in `../Skin_Lesion_XAI_research`. If a local frontend checkout still contains `notebooks/`, `train_backbones.py`, or `train_epoch_checkpoints.py`, treat those as migration leftovers. Do not build new frontend work around them.
+
 Start with this learning slice:
 
 1. Make the scaffold build cleanly.

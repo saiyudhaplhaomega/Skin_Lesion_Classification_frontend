@@ -1,4 +1,6 @@
 # Deep Learning Scientist Testing Guide
+
+> Migration note: this frontend copy is legacy. The active research notebooks and testing guide live in `../Skin_Lesion_XAI_research/notebooks/`. Do not use the frontend repo as the source of truth for research work.
 ## XAI Skin Lesion Classification — Research Experiments
 
 **Purpose**: Step-by-step guide for running the research notebooks to validate RQ1–RQ6.
