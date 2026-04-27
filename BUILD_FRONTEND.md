@@ -4,6 +4,35 @@
 
 ---
 
+## How This Guide Relates To The Root Docs
+
+This file is the beginner-friendly frontend tutorial. Keep it in the frontend repo because it teaches React/Next.js concepts and the first components to build.
+
+For production decisions, also read these root guides:
+
+- `../docs/BUILD_PHASE_3_FRONTEND.md` - production frontend sequence
+- `../docs/SYSTEM_DESIGN_LEARNING_GUIDE.md` - why Next.js, PWA-first mobile web, and separate repos are used
+- `../docs/PRODUCTION_BUILD_REVIEW.md` - current implementation gaps and production blockers
+
+If this file and the root docs disagree, treat the root docs as the production source of truth and update this file.
+
+## Current Reality
+
+The frontend repo is currently a clean Next.js scaffold. Do not rerun `create-next-app` if the scaffold already exists.
+
+Start with this learning slice:
+
+1. Make the scaffold build cleanly.
+2. Create `lib/api.ts` with a mocked predict call.
+3. Build `ImageUploader`.
+4. Build `PredictionDisplay`.
+5. Connect to the real backend `/predict`.
+6. Add `XAIViewer` after `/explain` exists.
+
+Build mobile-first from the beginning. The native Expo app should wait until this web flow and the backend API contract are stable.
+
+---
+
 ## Table of Contents
 
 1. [What Are We Building?](#1-what-are-we-building)
@@ -135,11 +164,11 @@ Open your terminal and run these commands:
 # Navigate to your projects folder
 cd C:/Users/saiyu/Desktop/projects/KI_projects
 
-# Create a new Next.js app called "skin-lesion-frontend"
+# Create a new Next.js app called "Skin_Lesion_Classification_frontend"
 # The --typescript flag adds TypeScript (helps catch errors)
 # The --tailwind flag adds Tailwind CSS (easy styling)
 # The --app flag uses the new App Router (modern way to build pages)
-npx create-next-app@latest skin-lesion-frontend --typescript --tailwind --app
+npx create-next-app@latest Skin_Lesion_Classification_frontend --typescript --tailwind --app
 
 # When it asks questions, answer:
 # - Would you like to customize the import alias "@/*"? → No (just press Enter)
@@ -151,7 +180,7 @@ Wait for it to finish (may take 2-3 minutes).
 
 ### What Just Happened?
 
-`npx create-next-app@latest` downloaded a tool that created a new folder called `skin-lesion-frontend`. Inside that folder is a complete working Next.js project - like ordering a prefab house that arrives with all walls built.
+`npx create-next-app@latest` downloaded a tool that created a new folder called `Skin_Lesion_Classification_frontend`. Inside that folder is a complete working Next.js project - like ordering a prefab house that arrives with all walls built.
 
 ---
 
@@ -160,7 +189,7 @@ Wait for it to finish (may take 2-3 minutes).
 After creating the project, your folder structure looks like this:
 
 ```
-skin-lesion-frontend/
+Skin_Lesion_Classification_frontend/
 ├── app/                    ← "App Router" - where all pages live
 │   ├── page.tsx           ← The main page (/)
 │   ├── layout.tsx         ← Shared layout for all pages
@@ -218,7 +247,7 @@ First, let's create a simple privacy policy page so you understand how routes wo
 
 **1. Create the directory:**
 ```bash
-cd skin-lesion-frontend
+cd Skin_Lesion_Classification_frontend
 mkdir -p app/privacy
 ```
 
