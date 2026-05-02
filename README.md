@@ -2,7 +2,7 @@
 
 Next.js web frontend for the Skin Lesion Classification platform.
 
-This repo owns browser-facing UI only: patient upload, prediction display, heatmap viewing, consent, doctor review, and admin workflows. Research notebooks and training outputs belong in `../Skin_Lesion_XAI_research`.
+This repo owns browser-facing UI only: image upload/capture guidance, prediction display, original-vs-heatmap comparison, AI explanation/chat, consent, doctor review, and admin workflows. Research notebooks and training outputs belong in `../Skin_Lesion_XAI_research`.
 
 ## Repo Boundaries
 
@@ -43,12 +43,61 @@ The current `lint` script uses `next lint`, which has been deprecated in newer N
 
 ## Planned App Surface
 
-- Patient upload flow
-- Prediction result view with human-readable confidence
-- Grad-CAM heatmap viewer
+- Patient upload/camera flow with image-quality guidance
+- Retake/proceed-anyway warning when image quality is poor
+- Prediction result view with human-readable confidence and uncertainty
+- Original, heatmap, overlay, and side-by-side comparison viewer
+- Grad-CAM heatmap viewer with failed/zero-CAM states
+- AI explanation panel grounded in prediction, heatmap, and safety policy
+- Suggested follow-up question chips plus free-text chat
+- Online explanation mode and local/offline fallback UX
 - Consent flow for research/training data
 - Doctor review dashboard
 - Admin approval and model management dashboard
+
+## Core Analysis UX
+
+The first real product screen should support:
+
+```text
+[Original] [Heatmap] [Overlay] [Compare]
+
+Prediction summary
+Image quality checklist
+AI explanation panel
+
+Suggested questions:
+- What does the heatmap mean?
+- Why is the model uncertain?
+- Should I see a doctor?
+```
+
+The frontend should always keep the original image visible or one click away. Heatmaps and LLM explanations are supporting evidence, not replacements for the original image.
+
+## Image Quality UX
+
+When the backend flags image-quality issues, show specific guidance:
+
+- take the photo in brighter indirect light
+- hold the camera steady
+- tap to focus on the lesion
+- center the lesion with surrounding skin visible
+- avoid flash glare
+- use a higher-quality camera or original upload if available
+
+For poor images, show:
+
+```text
+[Retake Photo] [Proceed Anyway]
+```
+
+If the user proceeds anyway, clearly mark the prediction and heatmap as less reliable.
+
+## LLM Explanation UX
+
+The LLM panel should offer simple explanation, technical explanation, doctor-style summary, suggested questions, and free-text follow-up.
+
+The UI should never present the LLM as a doctor. Use language such as "AI explanation" or "model explanation", not "diagnosis".
 
 ## Build Guide
 
@@ -59,3 +108,5 @@ For production sequencing and cross-repo architecture, use:
 - `../docs/BUILD_PHASE_3_FRONTEND.md`
 - `../docs/PRODUCTION_BUILD_REVIEW.md`
 - `../docs/HOW_TO_BUILD.md`
+- `../docs/PRODUCT_LAUNCH_STRATEGY.md`
+- `../docs/BUILD_GUIDE_AUDIT.md`
