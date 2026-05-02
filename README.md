@@ -51,6 +51,7 @@ The current `lint` script uses `next lint`, which has been deprecated in newer N
 - AI explanation panel grounded in prediction, heatmap, and safety policy
 - Suggested follow-up question chips plus free-text chat
 - Online explanation mode and local/offline fallback UX
+- Optional future CrewAI expert-panel explanation view after the core LLM/RAG workflow is stable
 - Consent flow for research/training data
 - Doctor review dashboard
 - Admin approval and model management dashboard
@@ -98,6 +99,15 @@ If the user proceeds anyway, clearly mark the prediction and heatmap as less rel
 The LLM panel should offer simple explanation, technical explanation, doctor-style summary, suggested questions, and free-text follow-up.
 
 The UI should never present the LLM as a doctor. Use language such as "AI explanation" or "model explanation", not "diagnosis".
+
+CrewAI can be exposed later as an expert-panel mode, but it must still be framed as AI model explanation. The UI should show agent disagreement and limitations without implying a clinical verdict.
+
+## Scale-Friendly UI Rules
+
+- Use cursor pagination for doctor/admin queues.
+- Do not load hundreds of images or heatmaps at once.
+- Show async pending, completed, failed, and retry states for prediction, heatmap, LLM, and CrewAI jobs.
+- Keep the original image available when showing heatmaps or explanations.
 
 ## Build Guide
 
