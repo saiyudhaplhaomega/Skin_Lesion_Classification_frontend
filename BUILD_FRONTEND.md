@@ -10,9 +10,9 @@ This file is the beginner-friendly frontend tutorial. Keep it in the frontend re
 
 For production decisions, also read these root guides:
 
-- `../docs/BUILD_PHASE_3_FRONTEND.md` - production frontend sequence
-- `../docs/SYSTEM_DESIGN_LEARNING_GUIDE.md` - why Next.js, PWA-first mobile web, and separate repos are used
-- `../docs/PRODUCTION_BUILD_REVIEW.md` - current implementation gaps and production blockers
+- `../docs/13_BUILD_PHASE_3_FRONTEND.md` - production frontend sequence
+- `../docs/32_SYSTEM_DESIGN_LEARNING_GUIDE.md` - why Next.js, PWA-first mobile web, and separate repos are used
+- `../docs/02_PRODUCTION_BUILD_REVIEW.md` - current implementation gaps and production blockers
 
 If this file and the root docs disagree, treat the root docs as the production source of truth and update this file.
 

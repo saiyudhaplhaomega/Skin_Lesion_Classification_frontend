@@ -115,8 +115,8 @@ Use [`BUILD_FRONTEND.md`](BUILD_FRONTEND.md) for the frontend walkthrough.
 
 For production sequencing and cross-repo architecture, use:
 
-- `../docs/BUILD_PHASE_3_FRONTEND.md`
-- `../docs/PRODUCTION_BUILD_REVIEW.md`
-- `../docs/HOW_TO_BUILD.md`
-- `../docs/PRODUCT_LAUNCH_STRATEGY.md`
-- `../docs/BUILD_GUIDE_AUDIT.md`
+- `../docs/13_BUILD_PHASE_3_FRONTEND.md`
+- `../docs/02_PRODUCTION_BUILD_REVIEW.md`
+- `../docs/01_HOW_TO_BUILD.md`
+- `../docs/33_PRODUCT_LAUNCH_STRATEGY.md`
+- `../docs/35_BUILD_GUIDE_AUDIT.md`
