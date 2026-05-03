@@ -15,7 +15,7 @@ This repo owns browser-facing UI only: image upload/capture guidance, prediction
 
 ## Current State
 
-This repo is a clean Next.js scaffold for the web app. If old `notebooks/`, `train_backbones.py`, or `train_epoch_checkpoints.py` files appear in a local checkout, treat them as migration leftovers from before the research repo split. Do not use the frontend as the source of truth for research work.
+This repo is a clean Next.js scaffold for the web app. It should not contain research notebooks, generated research outputs, Python training scripts, or notebook dependency files. Keep those in `../Skin_Lesion_XAI_research`.
 
 Notebook kernels are not configured from this repo. Use `../Skin_Lesion_XAI_research` and run `make register-kernel` there.
 
