@@ -23,6 +23,9 @@ Start with the **Master Design Prompt** first. This establishes the overall prod
 - lab-result upload and doctor-review status
 - customer dashboard overview, lesion list, reminders, notifications, privacy center, and education
 - research/model performance dashboards
+- embedded Power BI analytics for internal admin/doctor/research/model monitoring, not patient dashboards
+- cloud operations/cost-control screens for dev, staging, and production-style environments
+- EKS main runtime path, Aurora DSQL planned cloud database target, and Aurora PostgreSQL fallback only
 
 After the master direction looks right, generate each screen separately:
 
@@ -36,6 +39,8 @@ After the master direction looks right, generate each screen separately:
 8. Mobile capture concept
 9. Lab results and customer dashboard states
 10. React Native mobile 3D body map
+11. Embedded Power BI analytics shell
+12. Cloud operations and cost-control dashboard
 
 ## 2. Generate Screens In Google Stitch
 
@@ -53,6 +58,8 @@ Ask Stitch for both desktop and mobile versions. The final design should include
 - doctor dashboard with case queue, heatmap review, expert opinion form, and review history
 - administrator dashboard with full user, approval, subscription, case, form, settings, and audit controls
 - research dashboard with dataset quality, active learning, model performance, calibration, and fairness views
+- embedded Power BI analytics shell with role-aware report pages and privacy-safe data messaging
+- cloud operations/cost-control dashboard with start, pause, resume, shutdown, Terraform plan, and prod confirmation states
 - loading, empty, error, pending approval, suspended, expired, and success states where relevant
 
 Iterate inside Stitch until the visual direction is stable. Focus on layout, spacing, colors, hierarchy, dashboard density, and the overall product feel.
@@ -92,6 +99,8 @@ design/stitch/mobile-capture.png
 design/stitch/mobile-body-map-3d.png
 design/stitch/lab-results.png
 design/stitch/customer-dashboard.png
+design/stitch/powerbi-analytics.png
+design/stitch/cloud-cost-control.png
 design/stitch/stitch-export.html
 design/stitch/stitch-export.css
 design/stitch/figma-link.txt
@@ -137,6 +146,9 @@ When implementation starts, Codex should:
 - include customer dashboard cards for tracked lesions, follow-ups, recent analysis, doctor review, next reminder, and lab status
 - include image-quality retake states and "not enough information" states
 - include doctor-facing summary, PDF report, admin audit, and research dashboard surfaces
+- include a native shell for embedded Power BI internal analytics while keeping patient/customer dashboards native
+- include a cloud operations/cost-control admin surface if the design package covers platform operations
+- keep EKS, Aurora DSQL, Power BI secrets, and Terraform cost controls as operator/admin concepts, not patient-facing UI
 - keep medical copy safe and avoid diagnosis claims
 - build patient, doctor, and administrator screens as real app workflows
 - build research/model dashboard screens when that build guide is reached
@@ -152,6 +164,9 @@ Do not do these during the design-only phase:
 - do not commit raw Stitch code as production UI
 - do not implement authentication, subscriptions, CRUD, or admin workflows before the design is approved
 - do not move research notebooks or training files into this frontend repo
+- do not design Power BI as the patient/customer dashboard
+- do not expose cloud secrets, database URLs, Power BI secrets, raw image URLs, lab file URLs, or free-text medical notes in analytics screens
+- do not assume old Terraform module or Lambda folders exist; infrastructure is now taught through handholding guides
 - do not treat 3D body mapping or mobile as omitted; keep them designed and sequenced even when implementation comes later
 
 ## Handoff Checklist
@@ -170,6 +185,8 @@ Before asking for implementation, confirm:
 - [ ] React Native mobile 3D body map design is saved.
 - [ ] Customer dashboard design is saved.
 - [ ] Lab results upload/review design is saved.
+- [ ] Embedded Power BI analytics design is saved if internal analytics is in scope.
+- [ ] Cloud cost-control/admin operations design is saved if platform operations is in scope.
 - [ ] Important states are represented: loading, empty, error, approval, suspended, expired, success.
 - [ ] Medical safety states are represented: retake image, not enough information, professional review recommended, urgent review recommended.
 - [ ] Privacy states are represented: full clinical history, privacy balanced, maximum privacy, consent withdrawn, deletion requested.

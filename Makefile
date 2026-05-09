@@ -1,62 +1,43 @@
-# Frontend / research notebooks Makefile.
+# Frontend command menu.
+#
+# Run from:
+#   C:\Users\saiyu\Desktop\projects\KI_projects\Skin_Lesion_GRADCAM_Classification\Skin_Lesion_Classification_frontend
 
-VENV_DIR := skin-lesion-env
+.PHONY: help install dev build start lint typecheck clean
 
 ifeq ($(OS),Windows_NT)
-	PYTHON      := py -3.13
-	VENV_PYTHON := $(VENV_DIR)\Scripts\python.exe
-	VENV_PIP    := $(VENV_DIR)\Scripts\pip.exe
+NPM := npm.cmd
 else
-	PYTHON      := python3.13
-	VENV_PYTHON := $(VENV_DIR)/bin/python
-	VENV_PIP    := $(VENV_DIR)/bin/pip
+NPM := npm
 endif
 
-.PHONY: help setup install install-dev register-kernel run-notebook train-backbones train-backbones-full train-checkpoints clean
-
 help:
-	@echo "Available targets:"
-	@echo "  setup                - Create skin-lesion-env/ and install dev packages"
-	@echo "  install              - Install production packages only (requirements.txt)"
-	@echo "  install-dev          - Re-sync dev packages (requirements-dev.txt)"
-	@echo "  register-kernel      - Register Jupyter kernel for VS Code"
-	@echo "  run-notebook         - Launch Jupyter Lab"
-	@echo "  train-backbones      - Train EfficientNet-B2 + MobileNetV2 (2 epochs, quick)"
-	@echo "  train-backbones-full - Train EfficientNet-B2 + MobileNetV2 (15 epochs, full)"
-	@echo "  train-checkpoints    - Train ResNet50 saving a checkpoint per epoch (for RQ5)"
-	@echo "  clean                - Remove skin-lesion-env/ and __pycache__"
-
-setup:
-	@echo "Creating venv at $(VENV_DIR) ..."
-	$(PYTHON) -m venv $(VENV_DIR)
-	$(VENV_PYTHON) -m pip install --upgrade pip
-	$(VENV_PYTHON) -m pip install -r requirements-dev.txt
-	@echo ""
-	@echo "Done. Run: make register-kernel"
+	@echo "Frontend commands"
+	@echo "  make install   - Install Node dependencies"
+	@echo "  make dev       - Start Next.js dev server on :3000"
+	@echo "  make build     - Build the Next.js app"
+	@echo "  make start     - Start the built Next.js app"
+	@echo "  make lint      - Run Next.js lint"
+	@echo "  make typecheck - Run TypeScript checks"
+	@echo "  make clean     - Remove local Next.js build output"
 
 install:
-	$(VENV_PYTHON) -m pip install -r requirements.txt
+	$(NPM) install
 
-install-dev:
-	$(VENV_PYTHON) -m pip install -r requirements-dev.txt
+dev:
+	$(NPM) run dev
 
-register-kernel:
-	$(VENV_PYTHON) -m ipykernel install --user --name=skin-lesion-env --display-name="Skin Lesion (shared)"
-	@echo "Kernel 'skin-lesion-env' registered."
+build:
+	$(NPM) run build
 
-run-notebook:
-	$(VENV_PYTHON) -m jupyter lab --notebook-dir=./notebooks
+start:
+	$(NPM) run start
 
-train-backbones:
-	$(VENV_PYTHON) train_backbones.py --epochs 2
+lint:
+	$(NPM) run lint
 
-train-backbones-full:
-	$(VENV_PYTHON) train_backbones.py --epochs 15
-
-train-checkpoints:
-	$(VENV_PYTHON) train_epoch_checkpoints.py --epochs 10
+typecheck:
+	$(NPM) run type-check
 
 clean:
-	cmd /c "rmdir /s /q $(VENV_DIR)" 2>nul || rm -rf $(VENV_DIR)
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	powershell -NoProfile -Command "Remove-Item -Recurse -Force .next,out,dist -ErrorAction SilentlyContinue"

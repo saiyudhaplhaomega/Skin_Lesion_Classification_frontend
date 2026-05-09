@@ -8,7 +8,7 @@ Use these prompts in Google Stitch to generate the design direction first. Do no
 Create a premium medical AI product design for a web app called Skin Lesion XAI.
 
 Product purpose:
-Skin Lesion XAI helps patients upload or capture skin lesion images, receive AI-assisted skin lesion analysis, view Grad-CAM explainability heatmaps, track lesion history, mark lesion locations on 2D and 3D body maps, upload optional lab results as doctor-review context, request doctor review, export reports, and manage privacy consent. Doctors review cases and submit expert opinions. Administrators control the full platform. Research reviewers inspect de-identified approved data, model performance, calibration, fairness, and active learning queues.
+Skin Lesion XAI helps patients upload or capture skin lesion images, receive AI-assisted skin lesion analysis, view Grad-CAM explainability heatmaps, track lesion history, mark lesion locations on 2D and 3D body maps, upload optional lab results as doctor-review context, request doctor review, export reports, and manage privacy consent. Doctors review cases and submit expert opinions. Administrators control the full platform. Research reviewers inspect de-identified approved data, model performance, calibration, fairness, and active learning queues. Internal admin, doctor, research, model, image-quality, consent, lab, and operations analytics can be embedded through Power BI, but patient/customer dashboards stay native.
 
 Visual direction:
 Elegant futuristic glassmorphism. Dark graphite clinical background. Transparent glass panels. Electric cyan, clinical teal, signal blue, subtle warm red pulse accents. Premium medical AI aesthetic. The design should look like a world-class portfolio project but still feel medically trustworthy.
@@ -27,12 +27,15 @@ Design requirements:
 - Create a 3D body-map lesion location screen.
 - Create a React Native mobile 3D body-map screen.
 - Create a research/model performance dashboard.
+- Create an internal Power BI embedded analytics shell for admin/doctor/research users.
+- Create a cloud operations/cost-control screen showing dev, staging, and production-style environments, start/pause/resume/shutdown states, and clear cost warnings.
 - Create a mobile capture concept.
 - Use responsive desktop and mobile layouts.
 - Include loading, empty, error, pending approval, suspended, expired, and success states where relevant.
 - Include retake image, not enough information, professional review recommended, urgent review recommended, consent withdrawn, deletion requested, report generated, and demo mode states.
 - Include lab result uploaded, lab result reviewed, lab result rejected, doctor review pending, reminder due, and notification read/unread states.
 - Avoid misleading medical claims. Use AI support language, not final diagnosis language.
+- Keep cloud and infrastructure language operator-focused: EKS is the main runtime path, Aurora DSQL is the planned cloud database target, Aurora PostgreSQL is fallback only, and Terraform module/Lambda folders are not part of the user-facing UI.
 ```
 
 ## Landing Page Prompt
@@ -236,6 +239,47 @@ Design a research/admin dashboard for Skin Lesion XAI.
 Include approved training images, rejected images, class balance, body-region distribution, image-quality distribution, consent status, doctor-validated labels, model performance over time, confidence calibration, fairness evaluation by skin tone/body region/image quality/device, active learning queue, model disagreement, and observability metrics.
 
 Use dense professional tables and charts. Keep patient identity protected and show only de-identified approved data.
+```
+
+## Embedded Power BI Analytics Prompt
+
+```text
+Design an internal embedded analytics page for Skin Lesion XAI.
+
+This is not the patient dashboard. It is for admin, doctor, research, model monitoring, image quality, consent/privacy, lab review, and operations analytics.
+
+Include a native app shell with role-aware tabs:
+Overview, AI Analysis, Model Performance, Image Quality, Doctor Reviews, Body Location Verification, Consent & Privacy, Lab Results, Research Dataset, Operations.
+
+Inside the shell, show a large embedded report area that feels like Power BI but is framed by the app's native navigation, access controls, and audit banner.
+
+Privacy rules must be visible in the design language:
+no patient names, no patient emails, no raw image URLs, no lab report file URLs, no free-text medical notes.
+
+Use analytics-safe labels such as pseudonymous IDs, counts, trends, status, triage category, body region, model version, dataset version, consent status, and quality score.
+
+Include states:
+loading embed token, permission denied, token expired, report unavailable, RLS active, audit logged.
+```
+
+## Cloud Operations And Cost Control Prompt
+
+```text
+Design a cloud operations and cost-control dashboard for Skin Lesion XAI administrators.
+
+Purpose:
+Help a learner/operator see whether dev, staging, and production-style environments are running, paused, or shut down.
+
+Show environment cards for Dev, Staging, and Prod with:
+status, last started, last paused, last shutdown, estimated cost risk, active EKS workloads, database state, ALB/Ingress state, DSQL state, GuardDuty/logging state, and pending Terraform changes.
+
+Controls:
+Start, Pause Runtime, Resume Runtime, Full Shutdown, View Terraform Plan, View Runbook.
+
+Safety:
+Full Shutdown requires a strong confirmation state. Prod actions require an additional CONFIRM_PROD style warning. Use calm but explicit destructive-action design.
+
+Do not make this look like patient UI. It is an operator/admin tool.
 ```
 
 ## Mobile Capture Prompt

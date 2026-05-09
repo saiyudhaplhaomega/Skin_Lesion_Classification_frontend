@@ -59,6 +59,8 @@ The current `lint` script uses `next lint`, which has been deprecated in newer N
 - Lesion history and change tracking
 - Storage mode, retention, and deletion request flows
 - Research/model performance dashboard
+- Internal Power BI analytics shell for admin/doctor/research/model monitoring only
+- Cloud operations/cost-control admin surface after staging/production guides introduce it
 - Mobile capture companion flow after web/API contracts are stable
 
 ## Core Analysis UX
@@ -120,9 +122,13 @@ Use [`BUILD_FRONTEND.md`](BUILD_FRONTEND.md) for the frontend walkthrough.
 
 For production sequencing and cross-repo architecture, use:
 
-- `../docs/03_LOCAL_FRONTEND_AFTER_BACKEND.md`
-- `../docs/build/13_FRONTEND_WORKFLOW_HANDHOLDING.md`
-- `../docs/build/25_PROFESSIONAL_FEATURE_SEQUENCE.md`
-- `../docs/build/28_LESION_BODY_MAPPING_HANDHOLDING.md`
-- `../docs/build/30_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md`
-- `../docs/build/31_RESEARCH_FAIRNESS_MONITORING_HANDHOLDING.md`
+- `../docs/local-dev/02_LOCAL_FRONTEND_AFTER_BACKEND.md`
+- `../docs/local-dev/07_FRONTEND_WORKFLOW_HANDHOLDING.md`
+- `../docs/product/01_PROFESSIONAL_FEATURE_SEQUENCE.md`
+- `../docs/product/03_LESION_BODY_MAPPING_HANDHOLDING.md`
+- `../docs/product/05_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md`
+- `../docs/product/06_RESEARCH_FAIRNESS_MONITORING_HANDHOLDING.md`
+- `../docs/staging/12_POWERBI_EMBEDDED_ANALYTICS_HANDHOLDING.md`
+- `../docs/staging/00_CLOUD_COST_CONTROL_HANDHOLDING.md`
+
+Patient/customer dashboards stay native in Next.js. Power BI is only for internal analytics surfaces.

@@ -10,13 +10,23 @@ This file is the beginner-friendly frontend tutorial. Keep it in the frontend re
 
 For production decisions, also read these root guides:
 
-- `../docs/03_LOCAL_FRONTEND_AFTER_BACKEND.md` - first local frontend sequence
-- `../docs/build/13_FRONTEND_WORKFLOW_HANDHOLDING.md` - root frontend code-along guide
-- `../docs/build/25_PROFESSIONAL_FEATURE_SEQUENCE.md` - complete 30-feature build path
-- `../docs/build/28_LESION_BODY_MAPPING_HANDHOLDING.md` - 2D and 3D body mapping sequence
-- `../docs/build/30_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md` - doctor/admin/report sequence
+- `../docs/local-dev/02_LOCAL_FRONTEND_AFTER_BACKEND.md` - first local frontend sequence
+- `../docs/local-dev/07_FRONTEND_WORKFLOW_HANDHOLDING.md` - root frontend code-along guide
+- `../docs/product/01_PROFESSIONAL_FEATURE_SEQUENCE.md` - complete product feature sequence
+- `../docs/product/03_LESION_BODY_MAPPING_HANDHOLDING.md` - 2D and 3D body mapping sequence
+- `../docs/product/05_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md` - doctor/admin/report sequence
+- `../docs/staging/12_POWERBI_EMBEDDED_ANALYTICS_HANDHOLDING.md` - embedded internal analytics sequence
+- `../docs/staging/00_CLOUD_COST_CONTROL_HANDHOLDING.md` - cloud start, pause, resume, and shutdown guide
 
 If this file and the root docs disagree, treat the root docs as the production source of truth and update this file.
+
+Current root-doc structure:
+
+```text
+docs/local-dev -> docs/product -> docs/staging -> docs/production -> docs/reference
+```
+
+Terraform helper files and cloud environment tfvars are not pre-created. The cost-control guide teaches when and how to create them.
 
 ## Current Reality
 
