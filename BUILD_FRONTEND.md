@@ -10,9 +10,11 @@ This file is the beginner-friendly frontend tutorial. Keep it in the frontend re
 
 For production decisions, also read these root guides:
 
-- `../docs/13_BUILD_PHASE_3_FRONTEND.md` - production frontend sequence
-- `../docs/32_SYSTEM_DESIGN_LEARNING_GUIDE.md` - why Next.js, PWA-first mobile web, and separate repos are used
-- `../docs/02_PRODUCTION_BUILD_REVIEW.md` - current implementation gaps and production blockers
+- `../docs/03_LOCAL_FRONTEND_AFTER_BACKEND.md` - first local frontend sequence
+- `../docs/build/13_FRONTEND_WORKFLOW_HANDHOLDING.md` - root frontend code-along guide
+- `../docs/build/25_PROFESSIONAL_FEATURE_SEQUENCE.md` - complete 30-feature build path
+- `../docs/build/28_LESION_BODY_MAPPING_HANDHOLDING.md` - 2D and 3D body mapping sequence
+- `../docs/build/30_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md` - doctor/admin/report sequence
 
 If this file and the root docs disagree, treat the root docs as the production source of truth and update this file.
 
@@ -31,7 +33,7 @@ Start with this learning slice:
 5. Connect to the real backend `/predict`.
 6. Add `XAIViewer` after `/explain` exists.
 
-Build mobile-first from the beginning. The native Expo app should wait until this web flow and the backend API contract are stable.
+Build responsive web screens from the beginning. The native Expo app has its own guide and should reuse the stable web/backend API contract.
 
 ---
 
@@ -57,9 +59,9 @@ Build mobile-first from the beginning. The native Expo app should wait until thi
 
 We're building a web application where:
 1. Users upload a skin lesion image (dermoscopy photo)
-2. The AI analyzes it and says "benign" (not cancer) or "malignant" (cancer)
-3. The AI shows a heatmap explaining which parts of the image made it think that
-4. Users can optionally consent to share their image for training (to make the AI better)
+2. The AI returns a non-diagnostic support result with confidence/reliability
+3. The AI shows a heatmap explaining which image areas influenced the model
+4. Users choose consent, storage mode, and retention settings before data is reused
 
 The "frontend" is what the user sees and interacts with in their browser. It talks to the "backend" (a server) to do the actual AI analysis.
 

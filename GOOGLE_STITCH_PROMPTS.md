@@ -8,7 +8,7 @@ Use these prompts in Google Stitch to generate the design direction first. Do no
 Create a premium medical AI product design for a web app called Skin Lesion XAI.
 
 Product purpose:
-Skin Lesion XAI helps patients upload or capture skin lesion images, receive AI-assisted skin lesion analysis, view Grad-CAM explainability heatmaps, track lesion history, request doctor review, and manage privacy consent. Doctors review cases and submit expert opinions. Administrators control the full platform.
+Skin Lesion XAI helps patients upload or capture skin lesion images, receive AI-assisted skin lesion analysis, view Grad-CAM explainability heatmaps, track lesion history, mark lesion locations on 2D and 3D body maps, upload optional lab results as doctor-review context, request doctor review, export reports, and manage privacy consent. Doctors review cases and submit expert opinions. Administrators control the full platform. Research reviewers inspect de-identified approved data, model performance, calibration, fairness, and active learning queues.
 
 Visual direction:
 Elegant futuristic glassmorphism. Dark graphite clinical background. Transparent glass panels. Electric cyan, clinical teal, signal blue, subtle warm red pulse accents. Premium medical AI aesthetic. The design should look like a world-class portfolio project but still feel medically trustworthy.
@@ -19,10 +19,19 @@ The landing page begins with an abstract transparent glass brain with electric p
 Design requirements:
 - Create a landing page concept.
 - Create a patient dashboard.
+- Create a customer dashboard overview.
+- Create a lab result upload and review-status screen.
 - Create a doctor dashboard.
 - Create a full-control administrator dashboard.
+- Create a 2D body-map lesion location screen.
+- Create a 3D body-map lesion location screen.
+- Create a React Native mobile 3D body-map screen.
+- Create a research/model performance dashboard.
+- Create a mobile capture concept.
 - Use responsive desktop and mobile layouts.
 - Include loading, empty, error, pending approval, suspended, expired, and success states where relevant.
+- Include retake image, not enough information, professional review recommended, urgent review recommended, consent withdrawn, deletion requested, report generated, and demo mode states.
+- Include lab result uploaded, lab result reviewed, lab result rejected, doctor review pending, reminder due, and notification read/unread states.
 - Avoid misleading medical claims. Use AI support language, not final diagnosis language.
 ```
 
@@ -61,22 +70,54 @@ Style:
 Premium dark glass medical AI interface. Transparent panels, soft blur, cyan/teal electric accents, subtle diagnostic grid, restrained warning colors. Calm, trustworthy, and easy for patients.
 
 Navigation:
-Dashboard, New Analysis, My Lesions, Timeline, Reports, Subscription, Profile, Consent.
+Dashboard, My Lesions, Body Map, Analyze, Lab Results, Reports, Doctor Reviews, Reminders, Privacy & Consent, Settings, Education.
 
 Main content:
 - Account status bar showing one of: Pending Approval, Active Lifetime, Active Subscription, Trial, Expired, Suspended.
 - Upload or Capture Skin Image panel.
+- Optional symptom/context questionnaire: duration, recent change, itching, bleeding, pain, crusting, family history, photo lighting.
 - Image quality checklist: lighting, focus, distance, glare, surrounding skin visible.
-- Retake Photo and Proceed Anyway options for poor image quality.
-- AI result panel with benign/malignant risk label, confidence, reliability, and uncertainty warning.
+- Smart retake guidance: move closer, move farther, brighter light, avoid flash glare, center lesion, hold steady, use ruler or coin, match previous angle.
+- AI result panel with safe triage label, calibrated confidence, reliability, and uncertainty warning.
 - Heatmap viewer with tabs: Original, Grad-CAM Heatmap, Overlay, Compare.
+- Segmentation viewer with mask, boundary, overlay, and comparison states.
+- 2D body-map selector and 3D body-map preview for lesion pins.
+- Storage and retention controls: full clinical history, privacy balanced, maximum privacy, delete after analysis, 30 days, 1 year, until deleted, metadata only.
+- Lab results section with PDF/image upload, test date, lab name, patient note, consent to share with doctor, and doctor review status.
+- Reminder and notification cards.
 - AI explanation panel with simple explanation, technical explanation, doctor-style summary, suggested questions, and free-text follow-up.
 - Lesion timeline with previous captures, analysis history, doctor reviews, and reports.
 - Subscription/access card showing plan, renewal date, expiry date, lifetime access, or admin override.
 - Clear disclaimer: AI support, not a medical diagnosis.
 
 States to include:
-New user pending admin approval, expired subscription, suspended account, empty lesion history, failed upload, failed heatmap, analysis loading, analysis complete.
+New user pending admin approval, expired subscription, suspended account, empty lesion history, failed upload, failed heatmap, analysis loading, analysis complete, retake image, not enough information, professional review recommended, urgent review recommended, consent withdrawn, deletion requested.
+```
+
+## Customer Dashboard Prompt
+
+```text
+Design a responsive customer dashboard for Skin Lesion XAI.
+
+The dashboard should feel like a personal skin-monitoring dashboard, not a cancer-prediction dashboard.
+
+Include summary cards for tracked lesions, lesions needing follow-up, recent analysis, doctor review pending, next reminder, storage/privacy mode, and lab result status.
+
+Include sections for lesion list, body map pins with verification status, recent activity feed, analyze lesion entry point, reminders, reports, privacy and consent center, notifications, and education.
+
+Use safe medical language. Do not imply diagnosis.
+```
+
+## Lab Results Prompt
+
+```text
+Design a lab results screen for Skin Lesion XAI.
+
+Patients can upload a PDF lab report or image/photo of a lab report, add test date, lab provider/lab name, patient note, and choose whether to share it with a doctor.
+
+Show statuses: uploaded, doctor reviewed, rejected, deleted. Show that lab results are clinical context for doctor review, not AI diagnostic proof.
+
+Include private storage, consent, signed-link style access, deletion request, and doctor review notes.
 ```
 
 ## Doctor Dashboard Prompt
@@ -95,6 +136,7 @@ Main content:
 - Case queue table with filters: priority, date, AI risk, confidence, unread, reviewed.
 - Case detail view with original lesion image, Grad-CAM heatmap, overlay comparison, AI prediction, confidence, reliability score, and image quality notes.
 - Patient-safe metadata only: age range, lesion location, patient-reported symptoms/red flags, prior lesion timeline.
+- Dermatology-style case summary with location, first recorded date, image quality, AI output, change since previous image, Grad-CAM attention summary, symptoms, and recommendation.
 - Expert opinion form with fields: diagnosis category, agree/disagree with AI, urgency, recommendation, notes, request retake, refer to dermatologist.
 - Review history and audit trail.
 - Submit opinion button with confirmation state.
@@ -112,7 +154,7 @@ Style:
 Premium command-center glass UI. Dark clinical background, translucent panels, cyan/teal highlights, precise tables, strong filters, right-side edit drawers, clear destructive-action warnings. Powerful but not cluttered.
 
 Admin navigation:
-Overview, Users, Patients, Doctors, Administrators, Approvals, Subscriptions, Access Control, Forms, Cases, Doctor Reviews, Training Pool, Model Settings, Reports, Audit Logs, System Settings.
+Overview, Users, Patients, Doctors, Administrators, Approvals, Subscriptions, Access Control, Forms, Cases, Doctor Reviews, Training Pool, Model Settings, Reports, Audit Logs, System Settings, Performance, Fairness, Active Learning, Observability.
 
 Core requirement:
 The administrator has full control of the platform. Admin can create, read, update, deactivate, reactivate, suspend, expire, renew, approve, reject, and delete records where appropriate. Dangerous deletion must be a separate confirmation flow with reason and audit trail.
@@ -158,9 +200,66 @@ Main screen layout:
 - Form builder area for intake/consent/feedback/review forms.
 - Danger zone with Deactivate, Suspend, Permanent Delete, and Anonymize actions.
 - Audit log panel showing actor, target, action, timestamp, reason, previous value, new value.
+- Model performance panel with accuracy, sensitivity, specificity, calibration, false positives, false negatives, skin tone subgroup, body region, image quality, and device/camera filters.
+- Active learning queue with uncertainty, model disagreement, rare pattern, underrepresented body region, and edge-case reasons.
+- Observability panel with API latency, inference time, Grad-CAM time, failed uploads, poor image quality rate, LLM safety failure rate, doctor queue size, storage usage, and error rates.
 
 States to include:
 Pending approval, active lifetime, active subscription, trial, expired, suspended, deactivated, failed save, success toast, permission denied, deletion confirmation modal.
+```
+
+## 2D Body Map Prompt
+
+```text
+Design a responsive 2D body-location mapping screen for Skin Lesion XAI.
+
+Include front body, back body, left side, right side, face/scalp, hands, and feet. Let the user place a lesion pin, name the lesion, add a note, and choose New lesion, Existing lesion, or Not sure. Show nearby saved lesion pins and a compact lesion timeline preview.
+
+Keep the UI medically calm and clear. Include storage mode and safety disclaimer in the flow.
+```
+
+## 3D Body Map Prompt
+
+```text
+Design a responsive 3D body-location mapping screen for Skin Lesion XAI.
+
+Show a clean non-gory generic human body model that can rotate. Let the user tap a body region, place a lesion pin, view existing lesion pins, and open lesion history from a pin. Include a 2D fallback toggle, loading state, unsupported-device state, and precise coordinate summary for doctors/admins.
+
+Use premium clinical styling, but keep controls practical and readable.
+```
+
+## Research And Model Performance Dashboard Prompt
+
+```text
+Design a research/admin dashboard for Skin Lesion XAI.
+
+Include approved training images, rejected images, class balance, body-region distribution, image-quality distribution, consent status, doctor-validated labels, model performance over time, confidence calibration, fairness evaluation by skin tone/body region/image quality/device, active learning queue, model disagreement, and observability metrics.
+
+Use dense professional tables and charts. Keep patient identity protected and show only de-identified approved data.
+```
+
+## Mobile Capture Prompt
+
+```text
+Design a React Native mobile app concept for Skin Lesion XAI.
+
+Include camera capture, smart retake guidance, offline encrypted storage, upload when online, push reminders, 2D body-map pins, 3D body-map preview when supported, lesion timeline, privacy mode selection, consent controls, lab result upload, reports, and safe result display.
+
+The mobile app should feel like the companion to the web platform, not a separate product.
+```
+
+## React Native Mobile 3D Body Map Prompt
+
+```text
+Design a React Native mobile 3D body-map screen for Skin Lesion XAI.
+
+The screen lets a patient rotate a clean non-gory generic human body model, tap a body region, place a lesion pin, view existing pins, and open lesion details from a pin. The selected location must be labeled as patient-submitted until doctor verification.
+
+Include a 2D fallback toggle, unsupported-device state, loading state, model-load error state, pin placement confirmation sheet, coordinate summary, privacy reminder, and safe copy that says the location is not clinically verified yet.
+
+Controls should be thumb-friendly on mobile: rotate, reset view, front/back shortcuts, confirm location, cancel, and switch to 2D map.
+
+Keep the design calm and medical-supportive. Do not make the 3D model dramatic, gory, or diagnosis-like.
 ```
 
 ## Image Generation Prompts

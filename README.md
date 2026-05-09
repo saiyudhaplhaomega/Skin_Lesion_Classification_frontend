@@ -51,10 +51,15 @@ The current `lint` script uses `next lint`, which has been deprecated in newer N
 - AI explanation panel grounded in prediction, heatmap, and safety policy
 - Suggested follow-up question chips plus free-text chat
 - Online explanation mode and local/offline fallback UX
-- Optional future CrewAI expert-panel explanation view after the core LLM/RAG workflow is stable
+- Agentic expert-panel explanation view after the core safe LLM/RAG workflow is stable
 - Consent flow for research/training data
 - Doctor review dashboard
 - Admin approval and model management dashboard
+- 2D and 3D body mapping
+- Lesion history and change tracking
+- Storage mode, retention, and deletion request flows
+- Research/model performance dashboard
+- Mobile capture companion flow after web/API contracts are stable
 
 ## Core Analysis UX
 
@@ -100,7 +105,7 @@ The LLM panel should offer simple explanation, technical explanation, doctor-sty
 
 The UI should never present the LLM as a doctor. Use language such as "AI explanation" or "model explanation", not "diagnosis".
 
-CrewAI can be exposed later as an expert-panel mode, but it must still be framed as AI model explanation. The UI should show agent disagreement and limitations without implying a clinical verdict.
+Agentic XAI can be exposed later in the sequence as an expert-panel mode, but it must still be framed as AI model explanation. The UI should show agent disagreement and limitations without implying a clinical verdict.
 
 ## Scale-Friendly UI Rules
 
@@ -115,8 +120,9 @@ Use [`BUILD_FRONTEND.md`](BUILD_FRONTEND.md) for the frontend walkthrough.
 
 For production sequencing and cross-repo architecture, use:
 
-- `../docs/13_BUILD_PHASE_3_FRONTEND.md`
-- `../docs/02_PRODUCTION_BUILD_REVIEW.md`
-- `../docs/01_HOW_TO_BUILD.md`
-- `../docs/33_PRODUCT_LAUNCH_STRATEGY.md`
-- `../docs/35_BUILD_GUIDE_AUDIT.md`
+- `../docs/03_LOCAL_FRONTEND_AFTER_BACKEND.md`
+- `../docs/build/13_FRONTEND_WORKFLOW_HANDHOLDING.md`
+- `../docs/build/25_PROFESSIONAL_FEATURE_SEQUENCE.md`
+- `../docs/build/28_LESION_BODY_MAPPING_HANDHOLDING.md`
+- `../docs/build/30_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md`
+- `../docs/build/31_RESEARCH_FAIRNESS_MONITORING_HANDHOLDING.md`
