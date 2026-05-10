@@ -14,6 +14,7 @@ For production decisions, also read these root guides:
 - `../docs/local-dev/07_FRONTEND_WORKFLOW_HANDHOLDING.md` - root frontend code-along guide
 - `../docs/product/01_PROFESSIONAL_FEATURE_SEQUENCE.md` - complete product feature sequence
 - `../docs/product/03_LESION_BODY_MAPPING_HANDHOLDING.md` - 2D and 3D body mapping sequence
+- `../docs/local-dev/10_FRONTEND_SEO_HANDHOLDING.md` - public SEO pages, sitemap, robots, Open Graph, JSON-LD, and medical safety checklist
 - `../docs/product/05_DOCTOR_ADMIN_REPORTS_HANDHOLDING.md` - doctor/admin/report sequence
 - `../docs/staging/12_POWERBI_EMBEDDED_ANALYTICS_HANDHOLDING.md` - embedded internal analytics sequence
 - `../docs/staging/00_CLOUD_COST_CONTROL_HANDHOLDING.md` - cloud start, pause, resume, and shutdown guide
@@ -42,6 +43,8 @@ Start with this learning slice:
 4. Build `PredictionDisplay`.
 5. Connect to the real backend `/predict`.
 6. Add `XAIViewer` after `/explain` exists.
+
+Add public SEO pages only after the customer dashboard and privacy/consent flows are clear. Public SEO is for education and marketing pages only; do not index dashboard, lesion, analyze, report, doctor, admin, research, analytics, lab-result, or API routes.
 
 Build responsive web screens from the beginning. The native Expo app has its own guide and should reuse the stable web/backend API contract.
 
@@ -1314,6 +1317,8 @@ The frontend is now complete! At this point:
 - But the backend isn't running yet, so predictions will fail
 
 To make everything work, you need to build the backend. See the **Backend Build Guide (BUILD_BACKEND.md)** for step-by-step instructions.
+
+After the backend is running and the customer dashboard is working, follow `../docs/local-dev/10_FRONTEND_SEO_HANDHOLDING.md` to add public SEO pages, sitemap, robots rules, Open Graph images, and JSON-LD structured data before staging or production deployment.
 
 ---
 
