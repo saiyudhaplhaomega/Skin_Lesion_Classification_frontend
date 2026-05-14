@@ -44,6 +44,12 @@ Functional 3D rule:
 
 Role-based agent rule:
 Show AI agents as role-scoped assistants, not one universal chatbot. Clinical/XAI, doctor workflow, customer education, research/fairness, and admin market research agents must have separate surfaces, permissions, source labels, and safety boundaries.
+
+System design visibility rules (for operator and observability screens):
+- Redis activation cache: operator screens may show cache latency, hit rate, TTL, and eviction rate. Patient screens must never expose cache internals.
+- Rate limiting: admin and operator screens show rate limit tier per user (Tier 1: unauthenticated, Tier 2: authenticated patient, Tier 3: doctor/admin). Patient UI shows only "Request limit reached - try again in Ns."
+- Feature flags: admin screens show AppConfig feature flag toggles per environment (dev/staging/prod). Patient and doctor screens show only the resulting enabled/disabled feature, never the flag name or config value.
+- Circuit breakers: operator screens show per-circuit state (closed/half-open/open). Patient screens show a calm degraded-mode banner. Never expose technical circuit names to patients.
 ```
 
 ## Master Design Prompt
@@ -423,6 +429,185 @@ Close-up product UI detail shot for a clinical AI support platform, showing imag
 Clinical product visualization of an original skin image placeholder next to a Grad-CAM style heatmap overlay and lesion history timeline, educational model explanation concept only, calm healthcare UI, no diagnosis claim, no cancer-detection language, no text, no labels.
 ```
 
+## Agentic XAI Chat Surfaces Prompt
+
+```text
+Design four separate role-scoped AI agent chat surfaces for Skin Lesion XAI.
+Apply the Shared Clinical Premium Design Brief.
+Each surface must look visually distinct from the others and must show its permission scope clearly.
+
+--- Surface 1: Patient Education Agent ---
+Accessible from the patient dashboard.
+Purpose: educational skin health information, image quality guidance, privacy explanation, and doctor-appointment checklist.
+Design the chat panel as a sidebar or modal inside the patient dashboard.
+Show: agent name ("Skin Lesion Education Assistant"), a visible label "Educational information only - not medical advice", source attribution on every response ("Source: general skin care education"), clear "This agent cannot discuss your specific results."
+The input bar should show suggested questions: "What is Grad-CAM?", "What does my confidence score mean?", "How do I prepare for a dermatologist visit?", "What is a benign lesion?"
+Include streaming response animation, citation chips, and a "Learn More" link style for external education references.
+States: idle, typing, streaming, error, session expired, PHI blocked (if the patient tries to paste raw image data).
+
+--- Surface 2: Doctor Workflow Agent ---
+Accessible from the doctor dashboard, case detail view only.
+Purpose: assigned-case summary drafting and report support for the specific case open in context.
+Show: "Doctor Workflow Agent - Case-Scoped", label "Access: this case only. No other patient data.", case ID in the header.
+The input bar allows the doctor to ask: "Summarise the AI output for this case", "Draft an initial opinion note based on the Grad-CAM and patient-reported location", "What image quality issues should I note?"
+The agent references structured facts (label, confidence, body region, image quality, Grad-CAM regions) - never raw patient text or images.
+Show a "Trace" expand button per response showing which facts were used.
+States: idle, case-loaded, drafting, submitted (disabled after doctor submits opinion).
+
+--- Surface 3: Research/Fairness Agent ---
+Accessible from the research dashboard.
+Purpose: aggregate de-identified governance summaries - no individual patient records.
+Show: "Research Governance Agent - Aggregate data only", label "Aggregate statistics only. No patient identity. No PHI."
+Suggested inputs: "Summarise calibration drift over the last 30 days", "What subgroup has the highest false negative rate?", "How many cases are in the active learning queue?", "Is the training dataset balanced across skin tone groups?"
+States: idle, generating summary, no data available, PHI-blocked (if a question implies individual-level access).
+
+--- Surface 4: Admin Market Research Agent ---
+Accessible from the admin dashboard, Market Research tab only.
+Purpose: market intelligence and strategic decision support using Golden Docs only.
+Show: "Market Research Agent - Admin only", label "Business intelligence only. No patient data. No clinical advice."
+Suggested inputs: "Summarise our ICP for European dermatology practices", "What is the competitive positioning gap vs DermEngine?", "What are the top 3 objections to AI-assisted dermatology tools?"
+Show a Golden Docs health indicator in the chat header.
+Include a "Cite source" chip per fact, showing the Golden Doc section used.
+States: idle, generating brief, no sources approved, source stale, question blocked (clinical or patient question detected).
+
+Cross-cutting requirements for all four surfaces:
+- Each surface has a distinct visual identity (background tint, header label, permission scope callout).
+- None of them share a chat history with any other surface.
+- All responses include a source or "no source" label.
+- Input is disabled when the surface context is invalid (e.g., doctor surface disabled if no case is loaded).
+```
+
+## Consent Management Center Prompt
+
+```text
+Design a full-screen Consent Management Center for the patient role of Skin Lesion XAI.
+Apply the Shared Clinical Premium Design Brief.
+
+Navigation path:
+Privacy & Consent in the patient sidebar.
+
+Purpose:
+Patients manage their data storage choices, consent status, deletion requests, and active consent history in one place.
+
+Main content sections:
+
+1. Current Consent Status
+   - Per-analysis consent cards: analysis ID, date, label (blurred), consent status (consented / withdrawn / pending / deletion requested), storage mode, consent version.
+   - Withdraw button per card (confirm before action).
+   - Request Data Deletion button per card (confirm + reason).
+   - Bulk withdrawal option for all active consents.
+
+2. Storage Mode Center
+   - Current active mode with a clear label and explanation of what data is stored.
+   - Mode selector: Full Clinical History / Privacy Balanced / Maximum Privacy / Delete After Analysis / Metadata Only.
+   - A plain-language summary of each mode (what is kept, for how long, who can see it).
+   - A "What happens if I change this mode?" callout per mode.
+
+3. Active Consent for Training
+   - Show which analyses have been approved for training (doctor-validated and admin-approved cases).
+   - Withdraw from training button per approved case.
+   - "Once data is written to the training bucket, withdrawal removes it from future training runs but cannot undo past training." - show this clearly.
+
+4. Deletion Request Center
+   - Pending deletion requests with status: requested, processing, completed, failed.
+   - Timeline of completed deletions.
+   - "Deletion of all data" button with a strong confirmation modal: must type "DELETE MY DATA" to confirm.
+
+5. Consent Version History
+   - Show each consent form version the patient has accepted and when.
+   - Download / view link for each accepted consent form.
+
+6. Privacy Help
+   - "What does Skin Lesion XAI store about me?" collapsible section.
+   - GDPR rights summary.
+   - Contact privacy@skinlesionxai.com link (placeholder).
+
+States to include:
+Empty (no analyses yet), all consented, some withdrawn, deletion pending, deletion complete, storage mode changing, bulk withdrawal confirmation, deletion confirmation modal.
+```
+
+## Lesion History Timeline Prompt
+
+```text
+Design a dedicated Lesion History Timeline screen for the patient role of Skin Lesion XAI.
+Apply the Shared Clinical Premium Design Brief.
+
+Navigation path:
+My Lesions > select a lesion > History tab.
+
+Purpose:
+Show the complete history of one tracked lesion - all analyses, doctor reviews, lab results, consent events, and body location verifications - in chronological order.
+
+Timeline design:
+Use a vertical timeline with clearly separated event types.
+Group by month if the timeline is long.
+Each event has: date/time, event type icon, a one-line summary, and an expand arrow for details.
+
+Event types:
+- Analysis (original image thumbnail placeholder, label, confidence range label, quality note, Grad-CAM available indicator)
+- Doctor Review (doctor pseudonym, decision: validated/corrected/inconclusive, urgency note, review date)
+- Lab Result (lab name, test date, review status: uploaded/reviewed/rejected, note from doctor)
+- Consent Event (consent given, consent withdrawn, storage mode change, deletion request)
+- Body Location Event (2D pin placed, 3D coordinate placed, location verified by doctor)
+- Report Generated (download link, report version)
+- Reminder Set (reminder type, date triggered)
+
+Visual change indicator:
+If two or more analyses exist, show a "change since last analysis" panel:
+- label change (benign → malignant warning: amber; malignant → benign: neutral)
+- confidence trend (increasing / decreasing / stable)
+- doctor review status change
+
+Grad-CAM comparison:
+Show a "Compare Analyses" panel when 2+ analyses exist.
+Display two analysis cards side by side: original image placeholder, date, label, heatmap thumbnail placeholder.
+Include a simple overlay comparison toggle (if heatmaps are available).
+
+States:
+Single analysis (no comparison available), multiple analyses, doctor review pending, all events, only analyses filter, only doctor reviews filter, empty timeline, export timeline as PDF.
+```
+
+## Lab OCR Result Review Prompt
+
+```text
+Design a Lab OCR Result Review screen for the doctor role of Skin Lesion XAI.
+Apply the Shared Clinical Premium Design Brief.
+
+Navigation path:
+Doctor Dashboard > Case Detail > Lab Results tab.
+
+Context:
+A patient has uploaded a lab report PDF or image. The backend has run OCR and extracted structured fields. The doctor reviews the extracted fields, corrects errors, and approves or rejects the lab result as clinical context.
+
+Main content:
+
+1. Original Document Panel (left)
+   Show a PDF viewer or image viewer for the uploaded lab report.
+   Image is served via signed URL, not raw path.
+   Include page navigation for multi-page PDFs.
+   Include a "Download original" link.
+   Blur or redact panel if consent is not active.
+
+2. OCR Extracted Fields Panel (right)
+   Each extracted field shows: field name, extracted value, confidence score (0-100%), and an edit input.
+   Fields to extract: patient name (show as [REDACTED] - never show PHI), lab name, test date, report date, test type, result value, reference range, unit, interpretation (normal/abnormal/borderline), ordering physician, lab accreditation number.
+   Color the confidence score: >= 90% green, 70-89% amber, < 70% red.
+   Fields with low confidence are pre-highlighted for doctor review.
+   Include a "Mark all correct" shortcut and an "Edit" mode toggle.
+
+3. Doctor Review Panel (bottom right)
+   Disposition buttons: Approve as clinical context / Reject (image too blurry, wrong patient, unreadable, not relevant, consent issue).
+   If approving: add a "Doctor note" field and a "Share with patient" toggle.
+   Rejection reason dropdown with a free-text option.
+   Submit button with a confirmation step.
+
+4. OCR Metadata Footer
+   Show: OCR model version, extraction timestamp, page count, confidence summary (average, min field confidence).
+
+States:
+OCR in progress (loading), OCR failed (show original only), fields extracted (normal flow), all fields correct (green summary), some fields low confidence (amber callout), rejection confirmed, approval confirmed, consent not active (blurred panel + warning), permission denied (not assigned to this case).
+```
+
 ## Notes For Stitch Iteration
 
 After Stitch generates the first version, ask it to refine with:
@@ -435,4 +620,294 @@ Then ask:
 
 ```text
 Create three alternate visual directions for this same UI: lighter clinical, darker professional, and investor-demo premium. Keep the same information architecture, status states, privacy rules, and admin control requirements. Do not add organ spectacle, generic AI purple gradients, or diagnosis claims.
+```
+
+# Operator Surfaces
+
+Operator surfaces are the screens an admin, SRE, or research operator uses to keep the platform alive. These are NOT patient-facing. They share the Clinical Premium discipline but live in a different aesthetic register: denser, more numerical, more state-machine-y. The patterns below close the gaps identified in the engineering review and complete the production picture.
+
+Use these prompts AFTER the patient and clinical screens are stable. They build on the same Shared Brief but apply the additional Operator Surface Brief below.
+
+## Operator Surface Brief
+
+Apply this brief to every prompt in this section, on top of the Shared Clinical Premium Design Brief.
+
+```text
+Audience:
+Internal operators - administrators, SREs, ML researchers, clinical operations. These users read dashboards under pressure during incidents and during slow review cycles. The information density is higher than patient-facing surfaces.
+
+Aesthetic register:
+Same Clinical Premium calm as patient screens, but denser. Use tighter row heights, monospace for numerical fields, compact KPI tiles, log-style tables with severity bars, and small inline sparklines. Keep the same off-black / charcoal / clinical-white palette. No retro terminal, no Matrix-style green-on-black, no fake hacker aesthetics.
+
+State language for operator screens:
+- healthy = calm green dot or bar
+- degraded = amber tag with clear definition of "degraded"
+- circuit open = red tag with the dependency named
+- queue full = red tag with current depth and threshold
+- model degraded = amber tag with the failed gate named
+- calibration drift exceeded = amber tag with the metric and threshold
+- canary aborted = red tag with the SLO that triggered rollback
+- sticky-affinity broken = amber tag with the pod and session count affected
+
+Reject:
+- sci-fi infrastructure diagrams
+- decorative globe / network constellation spectacle
+- terminal "hacker" aesthetics
+- pie charts where a bar chart would be honest
+- alarm pages that look like Christmas trees
+- dashboards with no clear "what should I do now" answer
+
+Required for every operator surface:
+- a one-line "current state" summary at the top, plain language
+- a "what to do now" callout that links to a runbook, never an empty alert
+- timestamps with timezone (e.g., "2026-05-13 14:22 UTC")
+- a clear distinction between "what is" (current state) and "what was" (history)
+- consistent severity language across all screens
+
+Safety reminder for operators:
+Operator UIs can show technical detail (queue names, ARNs, alarm names) but never raw patient PHI. Patient identifiers, if shown, are tokens, not emails or names.
+```
+
+## Dead-Letter Queue Inspector
+
+```text
+Design a Dead-Letter Queue inspector screen for the admin role of the Skin Lesion XAI platform. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+The operator inspects messages that failed processing in the training-eligibility, lab OCR, or de-identification SQS queues. Each message can be triaged, viewed in detail, replayed (after fix), or archived.
+
+Sections:
+1. Top KPI row: total DLQ depth across all queues, oldest message age, count of new arrivals in last 1h, count of replays in last 24h.
+2. Queue selector: training-eligibility-dlq, lab-ocr-dlq, deidentification-dlq, training-pipeline-dlq.
+3. Message table: timestamp (UTC), message ID, source queue, error class, retry count, age, payload preview (first 80 chars), severity tag, actions.
+4. Detail panel (right side): full payload JSON with PHI redacted, full stack trace, the runbook link for this error class, "replay" and "archive" actions with a confirmation step.
+5. Empty state: "No messages in the dead-letter queue. This is the happy path."
+6. Error state: "Failed to load DLQ depth - check IAM permissions for the operator role."
+7. Loading state.
+
+Required states:
+- healthy (depth=0), warning (depth>0 but no alarm), critical (alarm fired), unauthorised (operator missing permission), unknown (queue not provisioned yet).
+
+Reject sci-fi infrastructure diagrams, fake hacker aesthetics, and any UI that shows raw PHI from the payload.
+```
+
+## Idempotency-Key Log Viewer
+
+```text
+Design an Idempotency-Key log viewer for the admin role of the Skin Lesion XAI platform. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+The operator audits idempotency-key usage to spot retry storms, duplicate-key collisions, replay attacks, or backend bugs.
+
+Sections:
+1. Top KPI row: keys recorded in last 24h, replay-hit rate, collision count, p95 server-side handling time.
+2. Filter bar: endpoint (consent, analysis, lab-results, doctor-review), status (200, 201, 4xx, 5xx), patient token (tokenised, not email), date range.
+3. Log table: timestamp (UTC), endpoint, idempotency-key (truncated), patient token, request hash, response status, replay-count (number of times the same key was retried), action (view).
+4. Detail panel: full request hash, full response body (PHI redacted), original creation time, all replay timestamps.
+5. Empty state: "No idempotency keys recorded in this range."
+6. Risky-pattern banner: red banner if collision count > 0; amber if replay rate > a defined threshold.
+
+Reject any UI that shows the raw idempotency key without truncation or that mixes consent keys with analysis keys without a clear visual separator.
+```
+
+## Circuit-Breaker And Degraded-Mode Banner
+
+```text
+Design the circuit-breaker and degraded-mode banner system for the Skin Lesion XAI platform. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+When a downstream dependency (model inference, LLM, OCR, RAG retrieval) is unhealthy, the platform shows a banner and serves a degraded experience. Operators see a separate operator-side view of the same circuits.
+
+Patient-facing variant:
+- Top banner across the app: "Some explanations are temporarily unavailable. Your upload and prediction still work. Detailed model explanations will return shortly."
+- Never use the word "broken" or technical terms.
+- Use amber, not red, unless the entire prediction flow is down.
+- Include a small "what is affected" link to a public status page (placeholder URL is fine).
+
+Operator-facing variant:
+- Top status bar listing each circuit: inference, gradcam, llm-clinical, llm-customer, llm-doctor, llm-admin-market, ocr.
+- For each: current state (closed/half-open/open), failure rate over last 60s, time since last state change.
+- Click a circuit to see: dependency name, error class breakdown, the runbook link, "force close" / "force open" admin actions (with confirm).
+
+Required states:
+- all green
+- one circuit half-open (transitional, info banner)
+- one circuit open (amber banner, patient flow continues with degraded explanation)
+- inference circuit open (red banner, prediction itself is degraded)
+- multiple circuits open (page-level red banner)
+
+Reject any UI that says "ERROR" in red across the entire page when only one circuit is open.
+```
+
+## Model Drift Dashboard
+
+```text
+Design a Model Drift dashboard for the research and admin roles of the Skin Lesion XAI platform. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+Monitor whether the production input distribution and output distribution have drifted from the training distribution. Drift is the precursor to silent model failure.
+
+Sections:
+1. Top KPI row: current input PSI vs training, current output PSI vs training, days since last retrain, number of drift alarms in last 30 days.
+2. Input feature drift: small panels per feature - image brightness, contrast, skin-tone proxy distribution, image resolution, EXIF camera count. Each shows a histogram overlay (training vs production) and the divergence metric.
+3. Output drift: predicted class distribution over time, calibration over time (Expected Calibration Error trend), confidence distribution histogram.
+4. Cohort drift: drift broken down by skin-tone bucket (if MILK10K-style data is integrated), by upload-source (web vs mobile), by approximate age band if collected.
+5. Alarm history: timeline of drift alarms with the feature, the threshold, the action taken.
+
+Required states:
+- no drift (calm green hero summary)
+- early signal (one feature above warning threshold, amber)
+- alert (drift exceeded, red, with "what to do now" link to retraining runbook)
+- not-enough-data (gray, "need 7 days of production data before drift is meaningful")
+
+Reject any sci-fi data-river visualisation; favour simple, comparable histograms and trend lines.
+```
+
+## Calibration Curve And Reliability Diagram
+
+```text
+Design a Calibration view for the research role of the Skin Lesion XAI platform. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+Show how well the model's predicted probability matches the empirical positive rate. A well-calibrated model that says 0.8 should be right 80% of the time.
+
+Sections:
+1. Reliability diagram: x-axis = predicted probability, y-axis = empirical positive rate, with the 45-degree perfect-calibration line, the model's curve, and confidence bands.
+2. Histogram of prediction counts per probability bucket.
+3. Expected Calibration Error (ECE) and Maximum Calibration Error (MCE) headline numbers.
+4. Per-cohort calibration: same view but broken down by skin-tone bucket, image source, or model version.
+5. Compare two model versions side by side (current vs candidate, or pre-temperature vs post-temperature).
+6. Action callout: "if ECE > threshold, schedule recalibration" with a link to the calibration runbook.
+
+Required states:
+- well-calibrated
+- under-confident (model says 0.6, truth is 0.8)
+- over-confident (model says 0.95, truth is 0.85; the medical-AI bias direction to fear most)
+- recalibration recommended
+
+Reject decorative chart styles; use the simplest reliability diagram convention.
+```
+
+## Shadow Deployment Comparison
+
+```text
+Design a Shadow Deployment comparison view for the admin and research roles. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+The candidate model runs in shadow alongside the production model. The view compares their predictions on the same inputs, without affecting the user's response.
+
+Sections:
+1. Top KPI row: shadow agreement rate, mean confidence delta, prediction shift count, time the shadow has been running.
+2. Side-by-side prediction table: timestamp, image thumbnail (placeholder), production prediction with confidence, shadow prediction with confidence, agreement tag.
+3. Disagreement detail panel: full prediction comparison, Grad-CAM heatmap overlay diff, confidence delta histogram, links to the original cases.
+4. Cohort breakdown: disagreement rates by skin-tone bucket and image source.
+5. Action callout: "if all gates pass, graduate shadow to canary" with the link to the promotion runbook.
+
+Required states:
+- shadow running, healthy agreement
+- shadow running, elevated disagreement (amber)
+- shadow running, severe disagreement (red, do not promote)
+- shadow not deployed
+- shadow paused
+
+Reject UI that returns the shadow result to the patient under any condition; always make clear the user response came from production.
+```
+
+## Canary Traffic-Split Control Panel
+
+```text
+Design a Canary Traffic-Split control panel for the admin role. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+The operator gradually shifts traffic from the production model to the new candidate. The system can auto-rollback on SLO breach.
+
+Sections:
+1. Top KPI row: current canary percentage, current error-rate delta vs baseline, current p95 latency delta vs baseline, time since canary started.
+2. Traffic-split control: stepped slider (0% / 5% / 25% / 50% / 100%) with confirmation modal, current bucketing rule (consistent hashing on patient token so the same patient sees a consistent model).
+3. Comparison panel: production-side metrics vs canary-side metrics on the same axes - request rate, error rate, p95 latency, prediction distribution.
+4. Rollback policy: visible thresholds for auto-rollback (error rate > X, p95 latency > Y, calibration ECE > Z), current burn state, manual "rollback now" action with confirmation.
+5. Action callout: "if SLOs hold for 24 hours at 50%, advance to 100%; if any SLO breaches, auto-rollback already fired" with link to runbook.
+
+Required states:
+- canary running, healthy
+- canary running, watching one threshold
+- canary aborted (red, with the SLO that triggered shown prominently)
+- canary at 100%, ready to promote
+- no canary active
+
+Reject control UI that allows skipping a stage without acknowledgement.
+```
+
+## Sticky-Session Affinity Diagnostic
+
+```text
+Design a Sticky-Session affinity diagnostic for the operator role. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+When sticky sessions are configured at the load balancer, the operator needs to see when affinity is broken (pod evicted, ALB re-targeted, deploy in progress) and how many active sessions are affected.
+
+Sections:
+1. Top KPI row: active sessions, sticky-bound sessions, affinity-broken sessions in last hour, mean session lifetime.
+2. Pod table: pod name, active sessions on this pod, status (running / draining / evicted), uptime, "drain gracefully" admin action.
+3. Affinity-break log: timestamp, session token, original pod, new pod, reason (deploy, eviction, health-check failure), patient impact (degraded explanation cache regenerated).
+4. Recommendation panel: if affinity-broken count is non-trivial, suggest moving the affected state to Redis instead and link to the cache pattern documentation.
+
+Required states:
+- affinity stable
+- deploy in progress (info banner, expected breaks)
+- unexpected breaks (amber)
+- excessive breaks (red, with the recommendation to externalise state)
+- sticky not configured (info, here's what would change)
+
+Reject any UI that exposes the raw session cookie value.
+```
+
+## Feature Flag Console
+
+```text
+Design a Feature Flag console for the admin role, backed by AWS AppConfig. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+Toggle runtime feature flags without a deploy. Stage flags across environments, roll them out by percentage, and observe usage.
+
+Sections:
+1. Flag list: flag name, type (boolean / percentage / variant), current value per environment (dev / staging / prod), owner, last changed at, change author.
+2. Flag detail: description, the code paths that read this flag (deep-link to the file in source), the rollout history, the SLO impact since last change.
+3. Rollout control: percentage slider per environment with confirmation; for boolean, a switch with a "promote to next env" button.
+4. Risk banner: "this flag has been on for 90 days - consider promoting to a config or removing" - one of the patterns to teach the operator.
+5. Audit log: every change with who, when, why (free-text reason).
+
+Required states:
+- flag off everywhere
+- flag on in dev only
+- flag percentage rollout in progress
+- flag on everywhere (consider removal)
+- flag with no recent reads (dead flag, suggest removal)
+
+Reject any UI that lets you change a prod flag without a confirmation step or an audit note.
+```
+
+## SLO And Error-Budget Board
+
+```text
+Design an SLO and Error-Budget board for the operator role. Apply the Shared Clinical Premium Design Brief and the Operator Surface Brief.
+
+Purpose:
+Show each critical user journey's SLO, current attainment, error budget remaining for the month, and burn rate.
+
+Sections:
+1. Top: month-to-date error budget summary across all journeys.
+2. Journey cards: one card per user journey - upload-and-predict, explain (Grad-CAM), doctor-review, lab-upload, admin-approve, research-query. Each card shows: SLO definition in one line, current attainment percentage, error budget remaining as a bar, burn rate (1h, 6h, 24h windows), runbook link.
+3. Drill-in panel: latency histogram, error class breakdown, time-series of attainment over the month, related alarms.
+4. Burn-rate alert banner: if 1h burn rate is high, show "fast burn - investigate now"; if 6h burn rate is high, show "slow burn - plan a fix this week".
+5. Empty / no-data state: clear message about how many days of data are required before the SLO is meaningful.
+
+Required states:
+- all journeys healthy
+- one journey in fast burn (red)
+- one journey in slow burn (amber)
+- budget exhausted (red, link to error-budget policy)
+- not enough data yet (gray)
+
+Reject 100-chart dashboards with no story; the operator must see "which journey to fix first" at a glance.
 ```

@@ -4,6 +4,25 @@ This guide explains how to use Google Stitch for design planning only, then brin
 
 The implementation source of truth remains this Next.js repo. Stitch output is reference only. Do not paste Stitch-generated code directly into `app/` or `components/` without a review, cleanup, dependency check, and architecture pass.
 
+
+## Design Tool Overview
+
+This project uses two design tools:
+
+### Claude Design (claude.design / claude.ai/code) -- for HTML prototypes
+Use [`CLAUDE_DESIGN_PROMPTS.md`](CLAUDE_DESIGN_PROMPTS.md) for generating HTML prototype designs. Each prompt is self-contained with audience, design constraints, required states, and DO NOT exclusions. Best for: interaction-focused prototypes, component-level designs, verifying a direction before full visual exploration.
+
+### Google Stitch -- for visual layout exploration
+Use [`GOOGLE_STITCH_PROMPTS.md`](GOOGLE_STITCH_PROMPTS.md) for visual layout exploration in Google Stitch. Best for: full-page layouts, color exploration, typography hierarchy, dense dashboard composition.
+
+**Recommended workflow:**
+1. Use Claude Design prompts first to validate the interaction model and key screens
+2. Use Google Stitch for full visual exploration of the approved direction
+3. Save outputs to `design/claude-design/` and `design/stitch/` respectively
+4. Implement via the design-to-code mapping in Section 5
+
+---
+
 ## 1. Open The Prompt Pack
 
 Use [`GOOGLE_STITCH_PROMPTS.md`](GOOGLE_STITCH_PROMPTS.md) as the prompt source.
@@ -43,6 +62,13 @@ After the master direction looks right, generate each screen separately:
 13. Cloud operations and cost-control dashboard
 14. Mobile capture concept
 15. Role-based agent surfaces
+16. **Agentic XAI chat surfaces** (4 role-scoped chat UIs)
+17. **Consent Management Center** (full-screen privacy control)
+18. **Lesion History Timeline** (per-lesion detailed history)
+19. **Lab OCR Result Review** (doctor OCR field review)
+20. Dead-letter queue inspector (operator)
+21. Circuit breaker and degraded-mode banner (patient + operator)
+22. Model drift dashboard (research + admin)
 
 ## 2. Generate Screens In Google Stitch
 
@@ -136,7 +162,52 @@ design/stitch/figma-link.txt
 
 You do not need every file. At minimum, provide screenshots and either a design spec, Figma link, or exported HTML/CSS reference.
 
-## 5. Handoff Message To Codex
+## 5. Design-To-Code Mapping
+
+When implementation starts, use this table to map each Stitch screen to its Next.js route, key component files, and API contracts.
+
+| Screen | Next.js Route | Key Component(s) | API Contract | State Machine |
+|---|---|---|---|---|
+| Landing page | `app/page.tsx` | `components/marketing/Hero.tsx`, `components/marketing/FeatureSections.tsx` | none | - |
+| Patient dashboard | `app/(patient)/dashboard/page.tsx` | `components/patient/AnalysisSummary.tsx`, `components/patient/AccountStatusBar.tsx` | `GET /api/v1/patient/cases` | account_status |
+| Upload + prediction | `app/(patient)/analyze/page.tsx` | `components/patient/ImageUploader.tsx`, `components/patient/PredictionResult.tsx` | `POST /api/v1/analysis` | upload → analyzing → result |
+| Grad-CAM viewer | `app/(patient)/analyze/[case_id]/page.tsx` | `components/patient/HeatmapViewer.tsx` | `GET /api/v1/analysis/{id}/explanation` | loading → loaded → error |
+| LLM explanation | `app/(patient)/analyze/[case_id]/explain/page.tsx` | `components/patient/AiExplanation.tsx` | `POST /api/v1/explain-llm/{id}` | generating → safe → blocked |
+| 2D body map | `app/(patient)/body-map/page.tsx` | `components/bodymap/BodyMap2D.tsx` | `POST /api/v1/lesions/{id}/location` | selecting → confirming |
+| 3D body map | `app/(patient)/body-map/3d/page.tsx` | `components/bodymap/BodyMap3D.tsx` (Three.js) | same as 2D | loading → interactive → fallback |
+| Lesion history timeline | `app/(patient)/lesions/[id]/history/page.tsx` | `components/patient/LesionTimeline.tsx` | `GET /api/v1/lesions/{id}/timeline` | - |
+| Consent center | `app/(patient)/privacy/page.tsx` | `components/patient/ConsentCenter.tsx`, `components/patient/StorageModePicker.tsx` | `GET/PATCH /api/v1/consent` | consented → withdrawn → deletion_requested |
+| Lab results (patient) | `app/(patient)/lab-results/page.tsx` | `components/patient/LabResultUpload.tsx` | `POST /api/v1/lab-results` | uploaded → reviewed → rejected |
+| Patient education chat | `app/(patient)/education/page.tsx` | `components/agents/PatientEducationChat.tsx` | `POST /api/v1/agents/education/chat` | idle → streaming → done |
+| Doctor dashboard | `app/(doctor)/dashboard/page.tsx` | `components/doctor/CaseQueue.tsx` | `GET /api/v1/doctor/cases` | - |
+| Doctor case review | `app/(doctor)/cases/[id]/page.tsx` | `components/doctor/CaseReview.tsx`, `components/doctor/OpinionForm.tsx` | `POST /api/v1/doctor-reviews` | pending → validated → corrected |
+| Lab OCR review | `app/(doctor)/cases/[id]/lab/page.tsx` | `components/doctor/LabOcrReview.tsx` | `GET/PATCH /api/v1/lab-results/{id}/ocr` | extracting → review → approved |
+| Doctor workflow chat | inside `app/(doctor)/cases/[id]/page.tsx` | `components/agents/DoctorWorkflowChat.tsx` | `POST /api/v1/agents/doctor/chat` | case-scoped |
+| Admin dashboard | `app/(admin)/dashboard/page.tsx` | `components/admin/UserTable.tsx`, `components/admin/ApprovalQueue.tsx` | `GET /api/v1/admin/users` | - |
+| Admin market research | `app/(admin)/market-research/page.tsx` | `components/admin/MarketResearchRAG.tsx` | `POST /api/v1/agents/admin-market/chat` | admin-only |
+| Research dashboard | `app/(research)/dashboard/page.tsx` | `components/research/FairnessPanel.tsx`, `components/research/ModelPerformance.tsx` | `GET /api/v1/research/metrics` | - |
+| Power BI shell | `app/(admin)/analytics/page.tsx` | `components/admin/PowerBIEmbed.tsx` | Power BI Embedded token API | role-aware |
+| Cloud cost control | `app/(admin)/cloud/page.tsx` | `components/admin/CloudEnvironmentCard.tsx` | `POST /api/v1/admin/cloud/{env}/{action}` | dev/staging/prod × running/paused/down |
+| DLQ inspector | `app/(admin)/cloud/dlq/page.tsx` | `components/admin/DLQInspector.tsx` | `GET /api/v1/admin/dlq` | operator-only |
+| Circuit breaker banner | `components/layout/DegradedModeBanner.tsx` | global layout | `GET /api/v1/health/circuits` | all-clear / degraded / down |
+
+### New Screen File Paths (to create in the Next.js repo)
+
+```text
+# Create these directories and route files when building each screen
+app/(patient)/privacy/page.tsx
+app/(patient)/lesions/[id]/history/page.tsx
+app/(patient)/education/page.tsx
+app/(doctor)/cases/[id]/lab/page.tsx
+components/agents/PatientEducationChat.tsx
+components/agents/DoctorWorkflowChat.tsx
+components/patient/ConsentCenter.tsx
+components/patient/LesionTimeline.tsx
+components/doctor/LabOcrReview.tsx
+components/layout/DegradedModeBanner.tsx
+```
+
+## 6. Handoff Message To Codex
 
 If you want an implementation plan first, say:
 
@@ -210,6 +281,7 @@ Do not do these during the design-only phase:
 
 Before asking for implementation, confirm:
 
+**Core screens**
 - [ ] The master Clinical Premium visual direction is approved.
 - [ ] Landing page desktop and mobile designs are saved.
 - [ ] Patient dashboard design is saved.
@@ -226,9 +298,24 @@ Before asking for implementation, confirm:
 - [ ] Mobile capture concept is saved.
 - [ ] Embedded Power BI analytics design is saved if internal analytics is in scope.
 - [ ] Cloud cost-control/admin operations design is saved if platform operations is in scope.
+
+**New screens (added 2026-05-13)**
+- [ ] Agentic XAI Chat - all 4 role-scoped chat surfaces (patient, doctor, research, admin) are designed.
+- [ ] Consent Management Center - full-screen privacy control design is saved.
+- [ ] Lesion History Timeline - per-lesion chronological event stream design is saved.
+- [ ] Lab OCR Result Review - doctor OCR field review design is saved.
+- [ ] Dead-letter queue inspector design is saved (operator surface).
+- [ ] Circuit breaker degraded-mode banner design is saved (patient-facing + operator variants).
+- [ ] Model drift dashboard design is saved (research + admin).
+
+**State coverage**
 - [ ] Important states are represented: loading, empty, error, approval, suspended, expired, success.
 - [ ] Medical safety states are represented: retake image, not enough information, professional review recommended, urgent review recommended.
 - [ ] Privacy states are represented: full clinical history, privacy balanced, maximum privacy, consent withdrawn, deletion requested.
+- [ ] Operator states are represented: circuit open, queue depth exceeded, model drift alarm, DLQ message present.
+
+**Quality gate**
 - [ ] Design review rejects sci-fi medical fantasy, generic AI dashboard, purple/blue startup UI, decorative anatomy spectacle, and patient-facing Power BI.
 - [ ] Design files are placed under `design/stitch/`.
 - [ ] The handoff message clearly says whether to plan only or implement.
+- [ ] Design-to-code mapping table in Section 5 of this file has been reviewed against the approved screens.

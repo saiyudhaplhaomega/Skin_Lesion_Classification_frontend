@@ -1020,7 +1020,7 @@ export interface MethodsResponse {
 
 // API client functions
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -1093,7 +1093,7 @@ export async function submitFeedback(
 
 **FormData** - When uploading files, we can't use JSON. We use `FormData` to package the file as multipart form data.
 
-**process.env.NEXT_PUBLIC_API_URL** - This reads an environment variable. In development, it's `http://localhost:8000`. In production on Vercel, you'd set it to your backend's URL.
+**process.env.NEXT_PUBLIC_API_BASE_URL** - This reads an environment variable. In development, it's `http://localhost:8000`. In production on Vercel, you'd set it to your backend's URL.
 
 **handleResponse Helper** - This function checks if the request succeeded. If not, it throws an error with the status code and message.
 
@@ -1296,7 +1296,7 @@ export default function HomePage() {
 Create `.env.local` in the project root:
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ```
 
 This tells the frontend where to find the backend.
@@ -1379,7 +1379,7 @@ npm run lint
 
 **API calls failing**
 → Make sure backend is running at `http://localhost:8000`
-→ Check `.env.local` has the correct `NEXT_PUBLIC_API_URL`
+-> Check `.env.local` has the correct `NEXT_PUBLIC_API_BASE_URL`
 
 **TypeScript errors**
 → Hover over the red underline to see what's wrong
