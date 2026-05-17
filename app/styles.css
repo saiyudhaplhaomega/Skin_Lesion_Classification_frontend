@@ -52,3 +52,51 @@ code {
   background: #eef2f3;
   padding: 2px 5px;
 }
+.upload-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.upload-form label {
+  font-weight: 700;
+}
+
+.upload-form input {
+  border: 1px solid #c8d1d6;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.upload-form button {
+  width: fit-content;
+  border: 0;
+  border-radius: 6px;
+  background: #245c58;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 14px;
+}
+
+.upload-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.error {
+  margin-top: 20px;
+  color: #9b1c1c;
+  font-weight: 700;
+}
+
+.result {
+  margin-top: 24px;
+  border-top: 1px solid #d8dee4;
+  padding-top: 20px;
+}
+
+.result h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
