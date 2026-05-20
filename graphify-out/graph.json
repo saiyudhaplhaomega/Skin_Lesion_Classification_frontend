@@ -1,0 +1,121 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "next-env.d.ts",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\next-env.d.ts",
+      "source_location": "L1",
+      "id": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_next_env_d_ts",
+      "community": 3,
+      "norm_label": "next-env.d.ts"
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\layout.tsx",
+      "source_location": "L1",
+      "id": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_app_layout_tsx",
+      "community": 0,
+      "norm_label": "layout.tsx"
+    },
+    {
+      "label": "RootLayout()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\layout.tsx",
+      "source_location": "L9",
+      "id": "layout_rootlayout",
+      "community": 0,
+      "norm_label": "rootlayout()"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\page.tsx",
+      "source_location": "L1",
+      "id": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_app_page_tsx",
+      "community": 1,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "submitImage()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\page.tsx",
+      "source_location": "L13",
+      "id": "page_submitimage",
+      "community": 1,
+      "norm_label": "submitimage()"
+    },
+    {
+      "label": "api.ts",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\lib\\api.ts",
+      "source_location": "L1",
+      "id": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_lib_api_ts",
+      "community": 2,
+      "norm_label": "api.ts"
+    },
+    {
+      "label": "analyzeImage()",
+      "file_type": "code",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\lib\\api.ts",
+      "source_location": "L10",
+      "id": "api_analyzeimage",
+      "community": 2,
+      "norm_label": "analyzeimage()"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\layout.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_app_layout_tsx",
+      "_tgt": "layout_rootlayout",
+      "source": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_app_layout_tsx",
+      "target": "layout_rootlayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\page.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_app_page_tsx",
+      "_tgt": "page_submitimage",
+      "source": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_app_page_tsx",
+      "target": "page_submitimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\app\\page.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "page_submitimage",
+      "_tgt": "api_analyzeimage",
+      "source": "page_submitimage",
+      "target": "api_analyzeimage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "C:\\Users\\saiyu\\Desktop\\projects\\KI_projects\\Skin_Lesion_GRADCAM_Classification\\Skin_Lesion_Classification_frontend\\lib\\api.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_lib_api_ts",
+      "_tgt": "api_analyzeimage",
+      "source": "c_users_saiyu_desktop_projects_ki_projects_skin_lesion_gradcam_classification_skin_lesion_classification_frontend_lib_api_ts",
+      "target": "api_analyzeimage",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
