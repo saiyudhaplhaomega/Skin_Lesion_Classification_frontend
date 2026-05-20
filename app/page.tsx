@@ -2,17 +2,11 @@
 
 import { FormEvent, useState } from "react";
 
-type AnalysisResult = {
-  label: string;
-  confidence: number;
-  explanation?: string;
-};
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+import { AnalysisResponse, analyzeImage } from "../lib/api";
 
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,21 +20,9 @@ export default function HomePage() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", file);
-
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/analysis`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Backend returned ${response.status}`);
-      }
-
-      const data = (await response.json()) as AnalysisResult;
+      const data = await analyzeImage(file);
       setResult(data);
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Unknown error";
@@ -80,10 +62,13 @@ export default function HomePage() {
           <section className="result" aria-live="polite">
             <h2>Result</h2>
             <p>
-              Label: <strong>{result.label}</strong>
+              Prediction: <strong>{result.prediction}</strong>
             </p>
             <p>Confidence: {(result.confidence * 100).toFixed(1)}%</p>
-            {result.explanation ? <p>{result.explanation}</p> : null}
+            <p>
+              Explanation:{" "}
+              {result.explanation_available ? "available" : "not available yet"}
+            </p>
           </section>
         ) : null}
       </section>
