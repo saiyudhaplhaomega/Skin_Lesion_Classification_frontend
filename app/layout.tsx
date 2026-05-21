@@ -1,18 +1,69 @@
 import type { Metadata } from "next";
+import { OrganizationJsonLd } from "../components/seo/OrganizationJsonLd";
+import { SoftwareApplicationJsonLd } from "../components/seo/SoftwareApplicationJsonLd";
 import "./styles.css";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Skin Lesion XAI",
-  description: "Explainable skin lesion classification frontend",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Skin Lesion AI Monitoring Platform",
+    template: "%s | Skin Lesion AI Monitoring Platform",
+  },
+  description:
+    "An educational AI-assisted skin lesion monitoring platform with Grad-CAM explainability, lesion history, privacy controls, and doctor-review support.",
+  applicationName: "Skin Lesion AI Monitoring Platform",
+  keywords: [
+    "skin lesion monitoring",
+    "Grad-CAM explainability",
+    "AI medical imaging education",
+    "lesion history tracking",
+    "explainable AI healthcare",
+  ],
+  authors: [{ name: "Saiyudh Mannan" }],
+  creator: "Saiyudh Mannan",
+  publisher: "Saiyudh Mannan",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "Skin Lesion AI Monitoring Platform",
+    title: "Skin Lesion AI Monitoring Platform",
+    description:
+      "Educational AI-assisted skin lesion monitoring with explainability, privacy controls, and doctor-review support.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Skin lesion AI monitoring platform overview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Skin Lesion AI Monitoring Platform",
+    description:
+      "Educational AI-assisted skin lesion monitoring with Grad-CAM explainability and privacy-first workflows.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
+      <OrganizationJsonLd />
+      <SoftwareApplicationJsonLd />
       <body>{children}</body>
     </html>
   );
