@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "Learn how Terms of Page.",
+    "Read safe-use terms for the educational skin lesion monitoring platform.",
   alternates: {
     canonical: "/terms",
   },
@@ -15,8 +15,9 @@ export default function TermsPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Terms of Service</h1>
         <p className="text-gray-600">
-          This platform is an educational support tool. It is not a medical
-          diagnosis system.
+          This platform is not a medical diagnosis tool. It provides
+          educational AI-supported information and helps organize lesion
+          history for professional review.
         </p>
       </div>
     </main>

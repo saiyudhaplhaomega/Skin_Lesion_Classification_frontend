@@ -167,3 +167,47 @@ code {
   padding: 10px 12px;
   text-decoration: none;
 }
+
+.public-page {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.public-hero {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.public-hero h1 {
+  max-width: 760px;
+}
+
+.public-hero p {
+  max-width: 760px;
+}
+
+.safety-note {
+  border-left: 4px solid #245c58;
+  background: #eef5f3;
+  padding: 12px 14px;
+}
+
+.public-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.public-grid article {
+  border: 1px solid #d8dee4;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 18px;
+}
+
+.public-grid h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}

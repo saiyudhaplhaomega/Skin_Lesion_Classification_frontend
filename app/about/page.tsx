@@ -15,8 +15,9 @@ export default function AboutPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">About</h1>
         <p className="text-gray-600">
-          This platform is an educational support tool. It is not a medical
-          diagnosis system.
+          This platform is not a medical diagnosis tool. It provides
+          educational AI-supported information and helps organize lesion
+          history for professional review.
         </p>
       </div>
     </main>

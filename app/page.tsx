@@ -1,76 +1,33 @@
-"use client";
-
-import { FormEvent, useState } from "react";
-
-import { AnalysisResponse, analyzeImage } from "../lib/api";
-
 export default function HomePage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<AnalysisResponse | null>(null);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function submitImage(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setResult(null);
-    setError("");
-
-    if (!file) {
-      setError("Choose an image before running the analysis.");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const data = await analyzeImage(file);
-      setResult(data);
-    } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Unknown error";
-      setError(`Could not analyze the image. ${message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   return (
-    <main className="shell">
-      <section className="panel">
-        <p className="eyebrow">Skin Lesion XAI</p>
-        <h1>Upload a lesion image</h1>
+    <main className="public-page">
+      <section className="public-hero">
+        <p className="eyebrow">AI-assisted monitoring</p>
+        <h1>Skin Lesion AI Monitoring Platform</h1>
         <p>
-          This is not a medical diagnosis. The AI result is supportive information only.
-          Please consult a qualified clinician for medical concerns.
+          Educational AI-assisted skin lesion monitoring with Grad-CAM
+          explainability, lesion history, body mapping, privacy modes, and
+          doctor-review support.
         </p>
-
-        <form className="upload-form" onSubmit={submitImage}>
-          <label htmlFor="image">Image file</label>
-          <input
-            id="image"
-            name="image"
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-          />
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Analyzing..." : "Run analysis"}
-          </button>
-        </form>
-
-        {error ? <p className="error">{error}</p> : null}
-
-        {result ? (
-          <section className="result" aria-live="polite">
-            <h2>Result</h2>
-            <p>
-              Prediction: <strong>{result.prediction}</strong>
-            </p>
-            <p>Confidence: {(result.confidence * 100).toFixed(1)}%</p>
-            <p>
-              Explanation:{" "}
-              {result.explanation_available ? "available" : "not available yet"}
-            </p>
-          </section>
-        ) : null}
+        <p className="safety-note">
+          This platform is not a medical diagnosis tool. It provides educational
+          AI-supported information and helps organize lesion history for
+          professional review.
+        </p>
+      </section>
+      <section className="public-grid" aria-label="Platform features">
+        <article>
+          <h2>Grad-CAM explainability</h2>
+          <p>Review model attention maps as educational context, not proof of disease.</p>
+        </article>
+        <article>
+          <h2>Lesion history</h2>
+          <p>Organize body locations, image history, notes, and review tasks over time.</p>
+        </article>
+        <article>
+          <h2>Privacy modes</h2>
+          <p>Choose metadata-only, thumbnail, or fuller history workflows as consent allows.</p>
+        </article>
       </section>
     </main>
   );

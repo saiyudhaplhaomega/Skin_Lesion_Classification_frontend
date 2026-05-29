@@ -15,6 +15,11 @@ export default function EducationPage() {
           Learn what Grad-CAM means, what confidence means, how to take better
           lesion photos, and when to seek professional review.
         </p>
+        <p>
+          This platform is not a medical diagnosis tool. It provides
+          educational AI-supported information and helps organize lesion
+          history for professional review.
+        </p>
       </section>
     </main>
   );
