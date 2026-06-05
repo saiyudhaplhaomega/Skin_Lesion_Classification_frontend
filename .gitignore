@@ -9,3 +9,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.tsbuildinfo
+
+# Local docs and design planning material
+*.md
+design-specs/
