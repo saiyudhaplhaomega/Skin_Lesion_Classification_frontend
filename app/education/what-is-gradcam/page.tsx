@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClinicalAppShell, SectionCard, StatusPill } from "@/components/app/ClinicalAppShell";
 
 export const metadata: Metadata = {
   title: "What Is Grad-CAM?",
@@ -11,18 +12,34 @@ export const metadata: Metadata = {
 
 export default function WhatIsGradcamPage() {
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">What Is Grad-CAM?</h1>
-        <p className="text-gray-600">
-          Grad-CAM shows model attention, not proof of disease.
-        </p>
-        <p className="text-gray-600">
-          This platform is not a medical diagnosis tool. It provides
-          educational AI-supported information and helps organize lesion
-          history for professional review.
-        </p>
+    <ClinicalAppShell
+      eyebrow="Education"
+      title="What is Grad-CAM?"
+      lead="Grad-CAM is a visual explanation that shows which image regions influenced a model. It is a context tool, not medical proof."
+      actions={[
+        { href: "/xai-gradcam", label: "XAI overview", variant: "ghost" },
+        { href: "/analyze", label: "Try analysis" },
+      ]}
+    >
+      <div className="app-two-column">
+        <SectionCard title="Attention, not diagnosis" eyebrow="Meaning">
+          <StatusPill tone="info">Model attention</StatusPill>
+          <p>
+            A Grad-CAM heatmap can help explain why a model produced an output by
+            highlighting image regions that mattered to its internal calculation.
+            The highlighted region does not prove disease and does not replace a
+            clinician.
+          </p>
+        </SectionCard>
+
+        <SectionCard title="How to read it safely" eyebrow="Checklist">
+          <div className="stack-list">
+            <p>Compare the heatmap with the original photo and image quality checks.</p>
+            <p>Look for whether the model focused on the lesion or irrelevant background.</p>
+            <p>Use the explanation as a question to discuss with a doctor.</p>
+          </div>
+        </SectionCard>
       </div>
-    </main>
+    </ClinicalAppShell>
   );
 }

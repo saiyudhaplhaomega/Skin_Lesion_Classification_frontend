@@ -1,0 +1,148 @@
+/* ============================================================================
+   Skin Lesion XAI — Design System
+   colors_and_type.css — Foundational color + typography tokens
+   ----------------------------------------------------------------------------
+   Tone: "Clinical Premium". Off-black/charcoal/white/light clinical grey
+   surfaces. One restrained teal accent. Status colors carry clinical meaning
+   only. No decorative gradients, no glow, no emoji.
+
+   Fonts: Inter (UI/body) + JetBrains Mono (data/code). Loaded from Google
+   Fonts CDN — the source repo shipped no local font files (Inter system
+   fallback). See README "Typography" for the substitution note.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* ── Brand font families ────────────────────────────────────────────── */
+  --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  /* ── Surfaces & neutrals (light clinical default) ───────────────────── */
+  --surface:        #F5F6F7;   /* app background — light clinical grey       */
+  --surface-card:   #FFFFFF;   /* cards, panels, inputs                      */
+  --surface-sunken: #EEF1F3;   /* wells, code, skeletons                     */
+  --border:         #DDE1E6;   /* hairline dividers, default borders         */
+  --border-strong:  #B0B8C4;   /* secondary button border, focus contexts    */
+
+  /* ── Off-black / charcoal (dark clinical surfaces) ──────────────────── */
+  --ink-900:        #0D1014;   /* off-black — image stages, dark headers      */
+  --ink-800:        #15191F;   /* charcoal panel                              */
+  --ink-700:        #1E242C;   /* charcoal raised                             */
+  --ink-600:        #2A323C;   /* charcoal border on dark                     */
+
+  /* ── Text ───────────────────────────────────────────────────────────── */
+  --text-primary:   #111418;   /* headings, primary body                      */
+  --text-secondary: #4A5568;   /* secondary body, descriptions                */
+  --text-muted:     #6E7E93;   /* captions, hints, metadata                   */
+  --text-inverse:   #F5F6F7;   /* text on dark/accent surfaces                */
+
+  /* ── Accent — the single restrained color (clinical teal) ───────────── */
+  --accent:         #1A5F7A;   /* primary actions, links, active state        */
+  --accent-mid:     #2980B2;   /* hover / lighter accent                      */
+  --accent-light:   #E8F4F8;   /* accent tint background                      */
+  --accent-press:   #154E64;   /* pressed / darker accent                     */
+
+  /* ── Status: clinical color language (use ONLY for meaning) ─────────── */
+  /* low concern */
+  --green:          #1E7C4D;
+  --green-bg:       #EAF6EE;
+  --green-border:   #A3D9B8;
+  /* monitor / needs follow-up */
+  --amber:          #B07D00;
+  --amber-bg:       #FFF8E6;
+  --amber-border:   #F0D080;
+  /* professional / doctor review (blue == accent family) */
+  --blue:           #1A5F7A;
+  --blue-bg:        #E8F4F8;
+  --blue-border:    #90C8DC;
+  /* urgent review — limited red, status + warnings only */
+  --red:            #B91C1C;
+  --red-bg:         #FEF2F2;
+  --red-border:     #F5AEAE;
+  /* pending / consent-withdrawn / deletion — neutral, not alarmist */
+  --neutral:        #4A5568;
+  --neutral-bg:     #F1F3F5;
+  --neutral-border: #C8D0DB;
+
+  /* ── Radii ──────────────────────────────────────────────────────────── */
+  --radius-sm: 4px;   /* tokens, chips, inputs inner */
+  --radius-md: 6px;   /* buttons, inputs             */
+  --radius-lg: 8px;   /* cards, panels               */
+  --radius-xl: 12px;  /* modals, large surfaces      */
+  --radius-pill: 100px;
+
+  /* ── Spacing scale (4px base) ───────────────────────────────────────── */
+  --sp-xs:  4px;
+  --sp-sm:  8px;
+  --sp-md:  16px;
+  --sp-lg:  24px;
+  --sp-xl:  32px;
+  --sp-2xl: 48px;
+  --sp-3xl: 64px;
+
+  /* ── Elevation — restrained, no glow. Soft neutral shadows only. ────── */
+  --shadow-xs: 0 1px 2px rgba(17, 20, 24, 0.05);
+  --shadow-sm: 0 1px 3px rgba(17, 20, 24, 0.08), 0 1px 2px rgba(17, 20, 24, 0.04);
+  --shadow-md: 0 4px 12px rgba(17, 20, 24, 0.08);
+  --shadow-lg: 0 12px 32px rgba(17, 20, 24, 0.12);   /* modals / slide-overs */
+
+  /* ── Motion ─────────────────────────────────────────────────────────── */
+  --dur-fast:   150ms;  /* card / panel transitions          ease           */
+  --dur-base:   200ms;  /* toast slide-in, sidebar           ease-out/in-out */
+  --dur-slow:   300ms;  /* heatmap fade-in                   ease-out        */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Layout ─────────────────────────────────────────────────────────── */
+  --max-width:      1280px;
+  --margin-mobile:  16px;
+  --margin-tablet:  24px;
+  --margin-desktop: 32px;
+
+  /* ── Focus ring (never animated; 2px solid, 2px offset) ─────────────── */
+  --focus-ring: 2px solid var(--accent);
+  --focus-offset: 2px;
+
+  /* ════ SEMANTIC TYPE TOKENS (desktop / 16px base) ════════════════════ */
+  /* H1 */
+  --h1-size: 32px; --h1-weight: 700; --h1-lh: 1.2;  --h1-ls: -0.5px;
+  /* H2 */
+  --h2-size: 24px; --h2-weight: 700; --h2-lh: 1.2;  --h2-ls: -0.3px;
+  /* H3 */
+  --h3-size: 18px; --h3-weight: 600; --h3-lh: 1.3;  --h3-ls: 0;
+  /* Body */
+  --body-size: 16px; --body-weight: 400; --body-lh: 1.6;
+  /* Body small */
+  --body-sm-size: 14px; --body-sm-lh: 1.6;
+  /* Label / caption — uppercase tracked */
+  --label-size: 12px; --label-weight: 700; --label-lh: 1.4; --label-ls: 0.8px;
+  /* Mono / data */
+  --mono-size: 13px; --mono-weight: 400; --mono-lh: 1.5;
+}
+
+/* ── Semantic element classes (use these, not raw tokens, in markup) ──── */
+.ds-h1 { font: var(--h1-weight) var(--h1-size)/var(--h1-lh) var(--font-sans); letter-spacing: var(--h1-ls); color: var(--text-primary); margin: 0; }
+.ds-h2 { font: var(--h2-weight) var(--h2-size)/var(--h2-lh) var(--font-sans); letter-spacing: var(--h2-ls); color: var(--text-primary); margin: 0; }
+.ds-h3 { font: var(--h3-weight) var(--h3-size)/var(--h3-lh) var(--font-sans); color: var(--text-primary); margin: 0; }
+.ds-body { font: var(--body-weight) var(--body-size)/var(--body-lh) var(--font-sans); color: var(--text-secondary); margin: 0; }
+.ds-body-sm { font: 400 var(--body-sm-size)/var(--body-sm-lh) var(--font-sans); color: var(--text-secondary); margin: 0; }
+.ds-label { font: var(--label-weight) var(--label-size)/var(--label-lh) var(--font-sans); letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--text-muted); margin: 0; }
+.ds-mono { font: var(--mono-weight) var(--mono-size)/var(--mono-lh) var(--font-mono); color: var(--text-primary); }
+
+/* Responsive type — scale down at tablet / mobile per spec */
+@media (max-width: 1023px) {
+  :root { --h1-size: 28px; --h2-size: 20px; --h3-size: 17px; --body-size: 15px; }
+}
+@media (max-width: 767px) {
+  :root { --h1-size: 20px; --h2-size: 16px; --h3-size: 14px; --body-size: 14px; --label-size: 11px; --mono-size: 12px; }
+}
+
+/* Accessibility: honor reduced motion globally */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Consent Management Center — Skin Lesion XAI</title>
+<link rel="stylesheet" href="consent/colors_and_type.css" />
+<link rel="stylesheet" href="consent/app.css" />
+<link rel="stylesheet" href="consent/consent.css" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  html, body { margin: 0; height: 100%; }
+  /* keep frame content crisp; artboards clip to their height */
+  .screen { height: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#1A5F7A"/>
+    <circle cx="50" cy="44" r="20" fill="none" stroke="#fff" stroke-width="3"/>
+    <circle cx="50" cy="44" r="7" fill="#fff"/>
+    <path d="M38 70h24" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+</template>
+
+<script type="text/babel" src="consent/primitives.jsx"></script>
+<script type="text/babel" src="consent/ConsentScreen.jsx"></script>
+<script type="text/babel" src="consent/design-canvas.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+
+// Re-run Lucide after artboards mount so every icon resolves.
+function IconRefresher() {
+  useEffect(() => {
+    const t = setInterval(() => window.lucide && window.lucide.createIcons(), 400);
+    setTimeout(() => clearInterval(t), 3000);
+    return () => clearInterval(t);
+  }, []);
+  return null;
+}
+
+const DW = 1280;   // desktop frame width
+const MW = 390;    // mobile frame width
+
+function App() {
+  return (
+    <>
+      <IconRefresher />
+      <DesignCanvas>
+        <DCSection id="desktop-core" title="Desktop · core states"
+          subtitle="Full consent center. Every control is live — pick a mode, flip the switch, open a modal.">
+          <DCArtboard id="d-active" label="All consented · active" width={DW} height={2330}>
+            <ConsentScreen device="desktop" status="active" mode="full" retention="365" training={true} />
+          </DCArtboard>
+          <DCArtboard id="d-partial" label="Consent partially withdrawn" width={DW} height={2352}>
+            <ConsentScreen device="desktop" status="partial" mode="balanced" retention="90" training={false} audit={DEFAULT_AUDIT.partial} />
+          </DCArtboard>
+          <DCArtboard id="d-changing" label="Storage mode changing" width={DW} height={2470}>
+            <ConsentScreen device="desktop" status="active" mode="full" retention="365" training={true} pendingMode="max" />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="desktop-modals" title="Desktop · confirmation modals"
+          subtitle="No dark patterns: destructive actions are gated and clearly labeled, the safe choice is never hidden.">
+          <DCArtboard id="d-withdraw" label="Withdrawal confirmation" width={DW} height={1040}>
+            <ConsentScreen device="desktop" status="active" mode="full" retention="365" training={true} modal="withdraw" />
+          </DCArtboard>
+          <DCArtboard id="d-delete" label="Deletion request · type to confirm" width={DW} height={1180}>
+            <ConsentScreen device="desktop" status="active" mode="full" retention="365" training={true} modal="delete" />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="mobile" title="Mobile"
+          subtitle="Same controls, single column. 44px touch targets, full-width modal sheets.">
+          <DCArtboard id="m-active" label="All consented · active" width={MW} height={3820}>
+            <ConsentScreen device="mobile" status="active" mode="full" retention="365" training={true} />
+          </DCArtboard>
+          <DCArtboard id="m-partial" label="Consent partially withdrawn" width={MW} height={3850}>
+            <ConsentScreen device="mobile" status="partial" mode="balanced" retention="90" training={false} audit={DEFAULT_AUDIT.partial} />
+          </DCArtboard>
+          <DCArtboard id="m-delete" label="Deletion request · type to confirm" width={MW} height={900}>
+            <ConsentScreen device="mobile" status="active" mode="full" retention="365" training={true} modal="delete" />
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+setTimeout(() => window.lucide && window.lucide.createIcons(), 500);
+</script>
+</body>
+</html>

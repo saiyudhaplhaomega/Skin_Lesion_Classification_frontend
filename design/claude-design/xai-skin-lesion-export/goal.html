@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skin Lesion XAI — Additional screens · /goal</title>
+<link rel="stylesheet" href="extended-screens/colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--surface); color: var(--text-primary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  .app-icon { display: inline-flex; } .app-icon svg { display: block; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 56px 32px 96px; }
+
+  /* masthead */
+  .mh { display: flex; align-items: flex-start; gap: 20px; padding-bottom: 28px; border-bottom: 2px solid var(--accent); margin-bottom: 8px; }
+  .mh-mark { width: 52px; height: 52px; border-radius: 13px; background: var(--accent); display: grid; place-items: center; flex-shrink: 0; }
+  .mh-reticle { width: 24px; height: 24px; border: 2.5px solid #fff; border-radius: 50%; position: relative; }
+  .mh-reticle::after { content: ''; position: absolute; inset: 5px; background: #fff; border-radius: 50%; }
+  .eyebrow { font: 700 11px var(--font-sans); letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent); margin: 0 0 9px; }
+  .mh h1 { font: 700 33px/1.1 var(--font-sans); letter-spacing: -0.7px; margin: 0; }
+  .mh p { font: 400 15px/1.6 var(--font-sans); color: var(--text-secondary); margin: 12px 0 0; max-width: 720px; }
+  .goal-pill { display: inline-flex; align-items: center; gap: 7px; font: 600 12px var(--font-mono); color: var(--accent); background: var(--accent-light); border: 1px solid var(--blue-border); border-radius: 100px; padding: 6px 13px; margin-left: auto; flex-shrink: 0; }
+  .goal-pill .app-icon svg { width: 14px; height: 14px; }
+
+  /* progress */
+  .progress { display: flex; align-items: center; gap: 16px; margin: 28px 0 40px; padding: 18px 22px; background: var(--surface-card); border: 1px solid var(--border); border-radius: 12px; }
+  .progress .pg-ring { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
+  .progress .pg-ring .pg-num { position: absolute; inset: 0; display: grid; place-items: center; font: 700 15px var(--font-mono); color: var(--green); }
+  .progress .pg-main { flex: 1; }
+  .progress .pg-t { font: 700 15px var(--font-sans); }
+  .progress .pg-d { font: 400 13px var(--font-sans); color: var(--text-secondary); margin-top: 3px; }
+  .progress .pg-stats { display: flex; gap: 26px; flex-shrink: 0; }
+  .pg-stat { text-align: right; } .pg-stat .ps-v { font: 500 22px var(--font-mono); color: var(--text-primary); } .pg-stat .ps-l { font: 400 11px var(--font-sans); color: var(--text-muted); }
+
+  /* section */
+  .sec-head { display: flex; align-items: center; gap: 14px; margin: 44px 0 20px; }
+  .sec-head .sh-ix { width: 30px; height: 30px; border-radius: 8px; background: var(--ink-900); color: #fff; display: grid; place-items: center; font: 700 13px var(--font-mono); flex-shrink: 0; }
+  .sec-head h2 { font: 700 19px var(--font-sans); letter-spacing: -0.3px; margin: 0; }
+  .sec-head .sh-rule { flex: 1; height: 1px; background: var(--border); }
+  .sec-head .sh-count { font: 500 12px var(--font-mono); color: var(--text-muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 940px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } .wrap { padding: 36px 20px 72px; } .mh { flex-wrap: wrap; } }
+
+  .card { display: flex; flex-direction: column; background: var(--surface-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; text-decoration: none; color: inherit; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+  .card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .card .c-top { display: flex; align-items: center; gap: 11px; margin-bottom: 13px; }
+  .card .c-ic { width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0; }
+  .card .c-ic .app-icon svg { width: 19px; height: 19px; }
+  .card .c-no { font: 700 11px var(--font-mono); color: var(--text-muted); margin-left: auto; }
+  .card h3 { font: 600 14.5px/1.3 var(--font-sans); margin: 0; letter-spacing: -0.2px; }
+  .card p { font: 400 12.5px/1.55 var(--font-sans); color: var(--text-secondary); margin: 8px 0 0; flex: 1; }
+  .card .c-foot { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font: 600 10px var(--font-sans); letter-spacing: .2px; padding: 4px 8px; border-radius: 100px; }
+  .chip .app-icon svg { width: 11px; height: 11px; }
+  .chip.both { color: var(--accent); background: var(--accent-light); }
+  .chip.role { color: var(--text-secondary); background: var(--surface-sunken); }
+  .chip.done { color: var(--green); background: var(--green-bg); }
+  .card .c-open { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font: 600 12px var(--font-sans); color: var(--accent); }
+  .card .c-open .app-icon svg { width: 14px; height: 14px; }
+
+  .ic-patient { background: var(--accent-light); color: var(--accent); }
+  .ic-doctor { background: var(--blue-bg); color: var(--blue); }
+  .ic-research { background: #efe9df; color: #7a6a4f; }
+  .ic-admin { background: #ebe8f1; color: #5f5677; }
+  .ic-ops { background: var(--ink-900); color: #fff; }
+
+  .note { margin-top: 44px; padding: 16px 20px; background: var(--accent-light); border: 1px solid var(--blue-border); border-radius: 10px; display: flex; gap: 12px; align-items: flex-start; }
+  .note .app-icon { color: var(--accent); flex-shrink: 0; } .note .app-icon svg { width: 18px; height: 18px; }
+  .note p { margin: 0; font: 400 12.5px/1.6 var(--font-sans); color: #1a4d66; } .note p strong { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mh">
+    <div class="mh-mark"><div class="mh-reticle"></div></div>
+    <div>
+      <p class="eyebrow">Skin Lesion XAI · Clinical Premium</p>
+      <h1>Additional screens</h1>
+      <p>Fourteen new surfaces built to the existing design system — four extended patient/admin screens and ten internal operator surfaces. Each is delivered as a labeled showcase with full desktop and mobile variations and realistic states, following the same shell, status vocabulary, and safety stance as the screens already in this project.</p>
+    </div>
+    <span class="goal-pill"><span class="app-icon"><i data-lucide="flag"></i></span>/goal · complete</span>
+  </div>
+
+  <div class="progress">
+    <div class="pg-ring">
+      <svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="var(--green-bg)" stroke-width="5"/><circle cx="28" cy="28" r="24" fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8 150.8" stroke-dashoffset="0" transform="rotate(-90 28 28)"/></svg>
+      <span class="pg-num">14</span>
+    </div>
+    <div class="pg-main">
+      <div class="pg-t">All 14 screens complete</div>
+      <div class="pg-d">Every screen includes a desktop showcase and a mobile variation with loading, healthy, warning, error and edge-case states.</div>
+    </div>
+    <div class="pg-stats">
+      <div class="pg-stat"><div class="ps-v">14</div><div class="ps-l">screens</div></div>
+      <div class="pg-stat"><div class="ps-v">28</div><div class="ps-l">desktop + mobile</div></div>
+      <div class="pg-stat"><div class="ps-v">130+</div><div class="ps-l">framed states</div></div>
+    </div>
+  </div>
+
+  <div class="sec-head"><span class="sh-ix">D</span><h2>Extended patient &amp; admin screens</h2><span class="sh-rule"></span><span class="sh-count">4 screens</span></div>
+  <div class="grid" id="grid-d"></div>
+
+  <div class="sec-head"><span class="sh-ix">E</span><h2>Operator surfaces</h2><span class="sh-rule"></span><span class="sh-count">10 screens</span></div>
+  <div class="grid" id="grid-e"></div>
+
+  <div class="note">
+    <span class="app-icon"><i data-lucide="shield-check"></i></span>
+    <p><strong>Built to the system, with the safety stance intact.</strong> Patient surfaces carry the verbatim educational disclaimer and never use diagnosis language; operator surfaces are clearly internal, redact payloads, use opaque tokens instead of identifiers, and pair every status with an icon and text. No protected health information appears on any screen.</p>
+  </div>
+</div>
+
+<script>
+const D = [
+  ['D.5', 'extended-screens/Lesion History Timeline.html', 'history', 'patient', 'Lesion history timeline', 'The full history of one tracked lesion — analyses, doctor reviews, labs, consent and reminders — with an informational change panel and heatmap comparison.', 'Patient'],
+  ['D.6', 'extended-screens/Agent Chat Surfaces.html', 'messages-square', 'patient', 'Agentic XAI chat surfaces', 'Four role-scoped assistants — patient education, doctor workflow, research governance, admin market research — that never share a history or index.', '4 roles'],
+  ['D.8', 'extended-screens/Embedded Analytics Shell.html', 'bar-chart-3', 'admin', 'Embedded Power BI analytics shell', 'An internal analytics shell with role-aware tabs, an audit banner and visible row-level security — analytics-safe labels only, never the patient dashboard.', 'Admin'],
+  ['D.9', 'extended-screens/Role-Based Agent Overview.html', 'bot', 'admin', 'Role-based agent overview', 'A governance view of five separated AI agent domains — allowed/blocked sources, approval rules, trace status and safety — presented as separate systems.', 'Admin'],
+];
+const E = [
+  ['E.1', 'operator-surfaces/Dead-Letter Queue Inspector.html', 'inbox', 'ops', 'Dead-letter queue inspector', 'Triage, inspect, replay or archive messages that failed processing — with redacted payloads, stack traces and per-class runbooks.'],
+  ['E.2', 'operator-surfaces/Idempotency-Key Log Viewer.html', 'key-round', 'ops', 'Idempotency-key log viewer', 'Audit idempotency-key usage to catch retry storms, duplicate-key collisions and replay attacks across state-changing endpoints.'],
+  ['E.3', 'operator-surfaces/Circuit Breaker - Degraded Mode.html', 'git-fork', 'ops', 'Circuit breakers & degraded mode', 'The operator circuit board paired with the calm patient banner — internal circuit names never exposed to patients.'],
+  ['E.4', 'operator-surfaces/Model Drift Dashboard.html', 'activity', 'research', 'Model drift dashboard', 'Training-vs-production histograms with PSI, output drift, cohort breakdowns and an alarm history — the precursor to silent failure.'],
+  ['E.5', 'operator-surfaces/Calibration - Reliability.html', 'scale', 'research', 'Calibration & reliability diagram', 'How well predicted probability matches the empirical rate, with ECE/MCE, per-cohort calibration and a current-vs-candidate comparison.'],
+  ['E.6', 'operator-surfaces/Shadow Deployment Comparison.html', 'split', 'research', 'Shadow deployment comparison', 'Compare a candidate model against production on the same inputs — the shadow result is never served to a patient.'],
+  ['E.7', 'operator-surfaces/Canary Traffic-Split.html', 'bird', 'ops', 'Canary traffic-split control', 'Gradually shift traffic with auto-rollback on SLO breach, token-stable bucketing and visible rollback thresholds.'],
+  ['E.8', 'operator-surfaces/Sticky-Session Affinity.html', 'link', 'ops', 'Sticky-session affinity diagnostic', 'See when session affinity breaks — deploy, health-flap or eviction — and how many sessions are affected, with a Redis recommendation.'],
+  ['E.9', 'operator-surfaces/Feature Flag Console.html', 'toggle-right', 'admin', 'Feature flag console', 'Toggle runtime flags across environments with percentage rollouts, stale/dead-flag detection, and audited production changes.'],
+  ['E.10', 'operator-surfaces/SLO & Error-Budget Board.html', 'target', 'ops', 'SLO & error-budget board', 'Budgets, burn rate and a change gate — when a budget exhausts, an automatic freeze blocks risky deploys until reliability recovers.'],
+];
+const roleClass = { patient: 'ic-patient', doctor: 'ic-doctor', research: 'ic-research', admin: 'ic-admin', ops: 'ic-ops' };
+function card(no, href, icon, role, title, desc, roleLabel) {
+  return `<a class="card" href="${href}">
+    <div class="c-top"><div class="c-ic ${roleClass[role]}"><span class="app-icon"><i data-lucide="${icon}"></i></span></div><span class="c-no">${no}</span></div>
+    <h3>${title}</h3><p>${desc}</p>
+    <div class="c-foot"><span class="chip both"><span class="app-icon"><i data-lucide="monitor-smartphone"></i></span>Desktop + mobile</span><span class="chip role">${roleLabel || (role.charAt(0).toUpperCase()+role.slice(1))}</span><span class="c-open">Open<span class="app-icon"><i data-lucide="arrow-right"></i></span></span></div>
+  </a>`;
+}
+document.getElementById('grid-d').innerHTML = D.map(c => card(c[0], c[1], c[2], c[3], c[4], c[5], c[6])).join('');
+document.getElementById('grid-e').innerHTML = E.map(c => card(c[0], c[1], c[2], c[3], c[4], c[5])).join('');
+lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

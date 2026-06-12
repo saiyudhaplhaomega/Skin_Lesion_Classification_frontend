@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Patient Dashboard — Skin Lesion XAI</title>
+<link rel="stylesheet" href="assets/colors_and_type.css" />
+<link rel="stylesheet" href="assets/dashboard.css" />
+</head>
+<body>
+<div id="app" class="app"></div>
+
+<!-- Demo state switcher (hidden when embedded with ?chrome=off) -->
+<div class="state-switcher" id="stateSwitcher" role="tablist" aria-label="Dashboard state">
+  <span class="ss-label">State</span>
+  <button data-state="loading" role="tab">Loading</button>
+  <button data-state="empty" role="tab">Empty</button>
+  <button data-state="error" role="tab">Error</button>
+  <button data-state="active" role="tab">Active</button>
+</div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>

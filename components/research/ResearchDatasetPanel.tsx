@@ -18,20 +18,26 @@ export function ResearchDatasetPanel() {
 
   useEffect(() => {
     fetch(`${API_BASE}/api/v1/research/metrics/dataset`)
-      .then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json() as Promise<DatasetMetrics>; })
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        return r.json() as Promise<DatasetMetrics>;
+      })
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading dataset metrics…</p>;
+  if (loading) return <p>Loading dataset metrics...</p>;
   if (error) return <p className="error-msg">Could not load metrics: {error}</p>;
   if (!data) return null;
 
   return (
-    <div className="card">
-      <h2>Training Dataset</h2>
-      <p className="caption">Model version: <strong>{data.model_version}</strong></p>
+    <div className="app-card">
+      <p className="app-card__eyebrow">Aggregate only</p>
+      <h2>Training dataset</h2>
+      <p className="caption">
+        Model version: <strong>{data.model_version}</strong>
+      </p>
       <div className="stat-grid">
         <div className="stat">
           <span className="stat-value">{data.total_approved}</span>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { AdminReviewDashboard } from "@/components/admin/AdminReviewDashboard";
+import { ClinicalAppShell } from "@/components/app/ClinicalAppShell";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -10,8 +12,16 @@ export const metadata: Metadata = {
 
 export default function AdminPage() {
   return (
-    <main>
-      <h1>Admin Dashboard</h1>
-    </main>
+    <ClinicalAppShell
+      eyebrow="Admin"
+      title="Platform operations"
+      lead="Monitor clinical safety queues, doctor verification, consent exports, model health, and staged feature rollout controls."
+      actions={[
+        { href: "/admin/market-research", label: "Market research", variant: "ghost" },
+        { href: "/doctor", label: "Doctor queue" },
+      ]}
+    >
+      <AdminReviewDashboard />
+    </ClinicalAppShell>
   );
 }

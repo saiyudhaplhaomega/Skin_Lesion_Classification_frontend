@@ -31,19 +31,23 @@ export function ActiveLearningPanel() {
 
   useEffect(() => {
     fetch(`${API_BASE}/api/v1/research/active-learning/queue`)
-      .then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json() as Promise<ActiveLearningQueue>; })
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        return r.json() as Promise<ActiveLearningQueue>;
+      })
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading active learning queue…</p>;
+  if (loading) return <p>Loading active learning queue...</p>;
   if (error) return <p className="error-msg">Could not load queue: {error}</p>;
   if (!data) return null;
 
   return (
-    <div className="card">
-      <h2>Active Learning Queue</h2>
+    <div className="app-card">
+      <p className="app-card__eyebrow">Research review</p>
+      <h2>Active learning queue</h2>
       <p className="caption">
         Cases flagged for doctor or research review (uncertainty threshold:{" "}
         {(data.uncertainty_threshold * 100).toFixed(0)}%).
@@ -65,13 +69,13 @@ export function ActiveLearningPanel() {
           <tbody>
             {data.cases.map((c) => (
               <tr key={c.prediction_id}>
-                <td className="mono">{c.prediction_id.slice(0, 8)}…</td>
+                <td className="mono">{c.prediction_id.slice(0, 8)}...</td>
                 <td>{c.model_version}</td>
                 <td>{REASON_LABELS[c.reason] ?? c.reason}</td>
                 <td>
                   {c.calibrated_confidence != null
                     ? `${(c.calibrated_confidence * 100).toFixed(1)}%`
-                    : "—"}
+                    : "-"}
                 </td>
               </tr>
             ))}

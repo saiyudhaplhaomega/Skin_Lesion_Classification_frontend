@@ -1,30 +1,69 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import { PublicShell } from "../../components/site/PublicShell";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
     "Learn about privacy modes, consent, deletion, doctor review, and lab-result privacy for skin lesion monitoring.",
-  alternates: {
-    canonical: "/privacy",
-  },
+  alternates: { canonical: "/privacy" },
 };
+
+const modes = [
+  {
+    title: "Metadata-only mode",
+    body: "Only structured facts are stored: body location, date, and notes. No images leave your device.",
+  },
+  {
+    title: "Thumbnail mode",
+    body: "A reduced, anonymized thumbnail is kept for visual reference; full-resolution images are discarded after analysis.",
+  },
+  {
+    title: "Full-history mode",
+    body: "Complete image history is stored encrypted for longitudinal comparison and doctor review, with explicit consent.",
+  },
+];
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Privacy Page</h1>
-        <p className="text-gray-600">
-          Privacy workflows support metadata-only mode, thumbnail mode, full
-          clinical history mode, consent, deletion, doctor review, and lab
-          result privacy.
-        </p>
-        <p className="text-gray-600">
-          This platform is not a medical diagnosis tool. It provides
-          educational AI-supported information and helps organize lesion
-          history for professional review.
-        </p>
+    <PublicShell
+      eyebrow="Trust"
+      title="Privacy"
+      lead="Consent decides what is stored. Three privacy modes, encryption at rest, full deletion rights, and no third-party tracking."
+    >
+      <div className="grid gap-5 md:grid-cols-3">
+        {modes.map((m) => (
+          <article key={m.title} className="glass edge-light p-6">
+            <h2 className="text-base font-semibold">{m.title}</h2>
+            <p className="mt-3 text-sm">{m.body}</p>
+          </article>
+        ))}
       </div>
-    </main>
+
+      <div className="glass edge-light mt-8 grid items-center gap-6 p-6 md:grid-cols-[200px_1fr]">
+        <div className="relative aspect-square overflow-hidden rounded-xl">
+          <Image
+            src="/art/trust-data-deletion.png"
+            alt=""
+            fill
+            className="object-cover"
+          />
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold">Deletion and consent</h2>
+          <p className="mt-3 text-sm">
+            Consent can be withdrawn at any time, and deletion removes images,
+            thumbnails, and derived heatmaps completely. Doctor review and lab
+            result sharing each require their own explicit opt-in.
+          </p>
+        </div>
+      </div>
+
+      <p className="safety-note mt-10 max-w-3xl">
+        This platform is not a medical diagnosis tool. It provides educational
+        AI-supported information and organizes lesion history for professional
+        review.
+      </p>
+    </PublicShell>
   );
 }

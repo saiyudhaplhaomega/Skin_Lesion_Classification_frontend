@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile view — Skin Lesion XAI research</title>
+  <link rel="stylesheet" href="assets/colors_and_type.css" />
+  <link rel="stylesheet" href="assets/app.css" />
+  <link rel="stylesheet" href="research-dashboard.css" />
+  <style>
+    html, body { margin: 0; background: var(--surface); }
+    #app .app { min-height: 100vh; }
+    #app .content { overflow: visible; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="charts.js"></script>
+  <script src="data.js"></script>
+  <script src="sections.js"></script>
+  <script src="vm.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var state = params.get('state') || 'populated';
+      document.getElementById('app').innerHTML = window.RDVM.renderState(state);
+      if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+    })();
+  </script>
+</body>
+</html>

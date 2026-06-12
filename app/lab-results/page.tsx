@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClinicalAppShell } from "@/components/app/ClinicalAppShell";
 import { LabResultUpload } from "@/components/lab-results/LabResultUpload";
 import { LabResultList } from "@/components/lab-results/LabResultList";
 
@@ -12,23 +13,19 @@ export const metadata: Metadata = {
 
 export default function LabResultsPage() {
   return (
-    <main className="dashboard-shell">
-      <section className="dashboard-header">
-        <p className="eyebrow">Lab Results</p>
-        <h1>Your Lab Results</h1>
-        <p>
-          Upload blood tests or lab reports so your doctor can review them alongside your skin
-          lesion history. Lab results are private and never used as AI diagnostic input.
-        </p>
-      </section>
-
-      <section className="dashboard-section">
+    <ClinicalAppShell
+      eyebrow="Lab results"
+      title="Your lab results"
+      lead="Upload blood tests or lab reports so your doctor can review them alongside lesion history. Lab results are private and never used as AI diagnostic input."
+      actions={[
+        { href: "/dashboard", label: "Dashboard", variant: "ghost" },
+        { href: "/doctor", label: "Doctor review" },
+      ]}
+    >
+      <div className="app-two-column">
         <LabResultUpload />
-      </section>
-
-      <section className="dashboard-section">
         <LabResultList />
-      </section>
-    </main>
+      </div>
+    </ClinicalAppShell>
   );
 }

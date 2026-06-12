@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Patient Dashboard — Skin Lesion XAI</title>
+<link rel="stylesheet" href="assets/colors_and_type.css" />
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { font-family: var(--font-sans); background: #f0eee9; }
+  .frame { width: 100%; height: 100%; border: 0; display: block; background: var(--surface); }
+  /* Intro banner that floats above the canvas */
+  .intro {
+    position: fixed; top: 16px; left: 16px; z-index: 50;
+    background: var(--surface-card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-md);
+    padding: 14px 18px; max-width: 360px;
+  }
+  .intro .row { display: flex; align-items: center; gap: 10px; }
+  .intro .mark { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; flex-shrink: 0; }
+  .intro .reticle { width: 16px; height: 16px; border: 2px solid #fff; border-radius: 50%; position: relative; }
+  .intro .reticle::after { content: ''; position: absolute; inset: 3px; background: #fff; border-radius: 50%; }
+  .intro h1 { font-size: 15px; font-weight: 700; margin: 0; letter-spacing: -0.2px; }
+  .intro .wm b { color: var(--accent); }
+  .intro p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin: 9px 0 0; }
+  .intro a.open { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .intro a.open:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <div class="row">
+    <div class="mark"><div class="reticle"></div></div>
+    <div><h1 class="wm">Skin Lesion <b>XAI</b> — Patient Dashboard</h1></div>
+  </div>
+  <p>The patient home screen across its four key states, shown at desktop and mobile. Drag to pan, scroll to zoom, click any frame's expand icon to focus it.</p>
+  <a class="open" href="dashboard.html" target="_blank" rel="noopener">Open the live, interactive dashboard →</a>
+</div>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel">
+  const { DesignCanvas, DCSection, DCArtboard } = window;
+
+  function Frame({ state, view }) {
+    const src = 'dashboard.html#state=' + state + '&chrome=off&view=' + view;
+    return <iframe className="frame" src={src} title={state + ' / ' + view} scrolling="yes" />;
+  }
+
+  const STATES = [
+    { id: 'active',  label: 'Active', desc: 'Full lesion history' },
+    { id: 'empty',   label: 'Empty',  desc: 'First-time, no data' },
+    { id: 'loading', label: 'Loading', desc: 'Skeleton placeholders' },
+    { id: 'error',   label: 'Error',  desc: 'Recoverable, data safe' },
+  ];
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="desktop" title="Desktop" subtitle="≥ 1024px — sidebar + greeting top bar">
+          {STATES.map(s => (
+            <DCArtboard key={s.id} id={'d-' + s.id} label={s.label + ' · ' + s.desc} width={1240} height={820}>
+              <Frame state={s.id} view="desktop" />
+            </DCArtboard>
+          ))}
+        </DCSection>
+        <DCSection id="mobile" title="Mobile" subtitle="≤ 860px — top app bar + bottom tab nav">
+          {STATES.map(s => (
+            <DCArtboard key={s.id} id={'m-' + s.id} label={s.label + ' · ' + s.desc} width={390} height={820}>
+              <Frame state={s.id} view="mobile" />
+            </DCArtboard>
+          ))}
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

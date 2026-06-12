@@ -34,13 +34,14 @@ export function LabResultList() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading lab results…</p>;
+  if (loading) return <p>Loading lab results...</p>;
   if (error) return <p className="error-msg">Could not load lab results: {error}</p>;
   if (results.length === 0) return <p>No lab results uploaded yet.</p>;
 
   return (
-    <div className="lab-result-list">
-      <h2>Uploaded Lab Results</h2>
+    <div className="app-card lab-result-list">
+      <p className="app-card__eyebrow">Doctor-visible only with consent</p>
+      <h2>Uploaded lab results</h2>
       <table className="data-table">
         <thead>
           <tr>
@@ -56,13 +57,13 @@ export function LabResultList() {
           {results.map((r) => (
             <tr key={r.id}>
               <td>{r.test_date ?? r.created_at.slice(0, 10)}</td>
-              <td>{r.lab_name ?? "—"}</td>
+              <td>{r.lab_name ?? "-"}</td>
               <td>{r.file_type}</td>
               <td>
                 <LabResultStatus status={r.status} />
               </td>
               <td>{r.consent_to_share_with_doctor ? "Yes" : "No"}</td>
-              <td>{r.doctor_note ?? "—"}</td>
+              <td>{r.doctor_note ?? "-"}</td>
             </tr>
           ))}
         </tbody>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ClinicalAppShell } from "@/components/app/ClinicalAppShell";
+import { MockAnalyzeFlow } from "@/components/app/MockAnalyzeFlow";
 
 export const metadata: Metadata = {
   title: "Analyze",
@@ -10,12 +12,16 @@ export const metadata: Metadata = {
 
 export default function AnalyzePage() {
   return (
-    <main className="dashboard-shell">
-      <section className="dashboard-header">
-        <p className="eyebrow">Analyze</p>
-        <h1>Image Analysis</h1>
-        <p>Upload a supported lesion image for educational AI analysis.</p>
-      </section>
-    </main>
+    <ClinicalAppShell
+      eyebrow="Analyze"
+      title="Image analysis"
+      lead="Upload a supported lesion image, choose consent level, preview quality checks, and prepare an explainability packet for doctor review."
+      actions={[
+        { href: "/dashboard", label: "Dashboard", variant: "ghost" },
+        { href: "/reports", label: "Prepare report" },
+      ]}
+    >
+      <MockAnalyzeFlow />
+    </ClinicalAppShell>
   );
 }

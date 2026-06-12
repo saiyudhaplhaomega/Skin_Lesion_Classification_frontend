@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skin Lesion XAI — Camera Capture</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--surface);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+  .app-icon svg { display: block; }
+
+  /* ── Gallery page chrome ─────────────────────────────────────────── */
+  .page { max-width: 1320px; margin: 0 auto; padding: var(--sp-2xl) var(--sp-xl) var(--sp-3xl); }
+  .page-head { border-bottom: 2px solid var(--accent); padding-bottom: var(--sp-lg); margin-bottom: var(--sp-2xl); }
+  .brandline { display: flex; align-items: center; gap: 10px; margin-bottom: var(--sp-md); }
+  .brandline .mark { width: 30px; height: 30px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; flex-shrink: 0; }
+  .brandline .reticle { width: 16px; height: 16px; border: 2px solid #fff; border-radius: 50%; position: relative; }
+  .brandline .reticle::after { content: ''; position: absolute; inset: 3px; background: #fff; border-radius: 50%; }
+  .brandline .wm { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+  .brandline .wm b { color: var(--accent); }
+  .page-head h1 { font: var(--h1-weight) var(--h1-size)/var(--h1-lh) var(--font-sans); letter-spacing: var(--h1-ls); margin: 0 0 var(--sp-sm); }
+  .page-head p { font: 400 16px/1.6 var(--font-sans); color: var(--text-secondary); max-width: 720px; margin: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--sp-md) var(--sp-xl); margin-top: var(--sp-lg); }
+  .legend .li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend .li .app-icon svg { width: 15px; height: 15px; }
+
+  /* ── Frame grid ──────────────────────────────────────────────────── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(390px, 1fr)); gap: var(--sp-2xl) var(--sp-xl); justify-items: center; }
+  .frame { width: 390px; }
+  .frame-label { display: flex; align-items: baseline; gap: 10px; margin-bottom: var(--sp-md); }
+  .frame-label .num { font: var(--mono-weight) 13px/1 var(--font-mono); color: var(--accent); background: var(--accent-light); border: 1px solid var(--blue-border); border-radius: var(--radius-sm); padding: 4px 7px; }
+  .frame-label .name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .frame-caption { margin-top: var(--sp-md); font-size: 12.5px; line-height: 1.55; color: var(--text-muted); }
+  .frame-caption b { color: var(--text-secondary); font-weight: 600; }
+
+  /* ── Phone shell ─────────────────────────────────────────────────── */
+  .phone {
+    width: 390px; height: 844px; border-radius: 48px;
+    background: #04070a; padding: 11px;
+    box-shadow: 0 0 0 2px #20262e, 0 24px 60px rgba(13,16,20,.28);
+    position: relative;
+  }
+  .screen {
+    width: 100%; height: 100%; border-radius: 38px; overflow: hidden;
+    position: relative; background: var(--ink-900); color: var(--text-inverse);
+    display: flex; flex-direction: column;
+  }
+  .island { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 112px; height: 31px; background: #04070a; border-radius: 100px; z-index: 60; }
+
+  /* iOS status bar */
+  .statusbar { height: 52px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 26px 7px; font-size: 14px; font-weight: 600; color: #fff; position: relative; z-index: 40; }
+  .statusbar.on-photo { text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+  .statusbar .sb-right { display: flex; align-items: center; gap: 6px; }
+  .statusbar .sb-right .app-icon svg { width: 16px; height: 16px; }
+  .statusbar .sb-right .batt { width: 24px; height: 12px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; opacity: .95; }
+  .statusbar .sb-right .batt::after { content: ''; position: absolute; right: -3px; top: 3px; width: 2px; height: 4px; background: currentColor; border-radius: 0 1px 1px 0; }
+  .statusbar .sb-right .batt::before { content: ''; position: absolute; inset: 1.5px; right: auto; width: 14px; background: currentColor; border-radius: 1px; }
+
+  /* home indicator */
+  .home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 100px; background: rgba(255,255,255,.55); z-index: 60; }
+  .home-ind.dark { background: rgba(255,255,255,.5); }
+
+  /* ── Skin photo stand-in (neutral CSS, never a fabricated medical photo) ── */
+  .photo-base { position: absolute; inset: 0; background:
+      radial-gradient(circle at 50% 44%, #c9a890 0%, #b8917a 30%, #8f6f5e 68%, #6b5346 100%); }
+  .photo-base::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 49% 46%, rgba(60,40,32,.5) 0%, rgba(60,40,32,0) 24%); }
+  .photo-base.review::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 100%, rgba(13,16,20,.55), rgba(13,16,20,0) 45%), radial-gradient(circle at 50% 0%, rgba(13,16,20,.5), rgba(13,16,20,0) 40%); }
+  .photo-blur { filter: blur(2.4px); }
+
+  /* ── Camera viewfinder layout ────────────────────────────────────── */
+  .vf { position: relative; z-index: 30; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .vf-top { position: relative; z-index: 40; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px 0; gap: 10px; }
+  .vf-mid { flex: 1; position: relative; }
+
+  /* Round overlay control buttons (≥44px) */
+  .cam-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(13,16,20,.55); color: #fff; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(4px); }
+  .cam-btn .app-icon svg { width: 21px; height: 21px; }
+  .cam-btn.on { background: var(--accent); }
+
+  .vf-top .grp { display: flex; gap: 10px; }
+  .loc-chip { display: flex; align-items: center; gap: 7px; height: 44px; padding: 0 14px; border-radius: 100px; background: rgba(13,16,20,.55); color: #fff; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); }
+  .loc-chip .app-icon svg { width: 16px; height: 16px; color: var(--accent-mid); }
+
+  /* dermoscopy elliptical guide */
+  .guide { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -54%); width: 248px; height: 300px; }
+  .guide .scrim { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 9999px rgba(13,16,20,.5); }
+  .guide .ring-outer { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.92); }
+  .guide .ring-inner { position: absolute; inset: 30px; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,.5); }
+  .guide.good .ring-outer { border-color: #7DDCA8; box-shadow: 0 0 0 1px rgba(125,220,168,.4); }
+  .guide .tick { position: absolute; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.92); }
+  .guide .tick.tl { top: -2px; left: 28px; border-right: none; border-bottom: none; }
+  .guide .tick.tr { top: -2px; right: 28px; border-left: none; border-bottom: none; }
+  .guide .tick.bl { bottom: -2px; left: 28px; border-right: none; border-top: none; }
+  .guide .tick.br { bottom: -2px; right: 28px; border-left: none; border-top: none; }
+  /* center reticle */
+  .reticle-x { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 26px; height: 26px; }
+  .reticle-x::before, .reticle-x::after { content: ''; position: absolute; background: rgba(255,255,255,.85); }
+  .reticle-x::before { left: 50%; top: 0; width: 1.5px; height: 100%; transform: translateX(-50%); }
+  .reticle-x::after { top: 50%; left: 0; height: 1.5px; width: 100%; transform: translateY(-50%); }
+
+  /* primary guidance text under guide */
+  .guide-hint { position: absolute; top: calc(50% + 116px); left: 50%; transform: translateX(-50%); white-space: nowrap;
+    background: rgba(13,16,20,.62); color: #fff; font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: 100px; backdrop-filter: blur(4px); }
+
+  /* indicator pill row */
+  .ind-row { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; justify-content: center; gap: 6px; padding: 0 10px; flex-wrap: nowrap; }
+  .ind { display: inline-flex; align-items: center; gap: 5px; background: rgba(13,16,20,.78); border: 1px solid rgba(255,255,255,.12); color: #fff; font-size: 11px; font-weight: 600; padding: 7px 9px; border-radius: 100px; backdrop-filter: blur(4px); white-space: nowrap; }
+  .ind .app-icon svg { width: 13px; height: 13px; }
+  .ind.good .app-icon svg { color: #7DDCA8; }
+  .ind.warn .app-icon svg { color: #F4C95B; }
+
+  /* zoom indicator */
+  .zoom { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(13,16,20,.55); color: #fff; font: 500 12px var(--font-mono); padding: 5px 11px; border-radius: 100px; backdrop-filter: blur(4px); }
+
+  /* bottom control bar */
+  .ctrlbar { background: rgba(13,16,20,.82); backdrop-filter: blur(8px); padding: 18px 26px 30px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+  .ctrlbar.solid { background: var(--ink-900); }
+  .side-btn { width: 52px; height: 52px; border-radius: 14px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; font-size: 9.5px; font-weight: 600; letter-spacing: .2px; }
+  .side-btn .app-icon svg { width: 21px; height: 21px; }
+  .side-btn.on { background: var(--accent); border-color: var(--accent); }
+  .side-l { justify-self: start; } .side-r { justify-self: end; }
+  /* 64px capture button */
+  .capture { width: 64px; height: 64px; border-radius: 50%; background: #fff; border: none; cursor: pointer; position: relative; display: grid; place-items: center; box-shadow: 0 0 0 4px rgba(255,255,255,.28); }
+  .capture::after { content: ''; width: 52px; height: 52px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 3px var(--ink-900); }
+  .capture.pressed { transform: scale(.93); box-shadow: 0 0 0 4px rgba(255,255,255,.5); }
+  .capture.pressed::after { background: #e7eaed; }
+
+  /* ── Centered message screens (permission / init / error) ────────── */
+  .msg { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 32px; gap: var(--sp-md); position: relative; z-index: 10; }
+  .msg .ic { width: 76px; height: 76px; border-radius: 22px; display: grid; place-items: center; }
+  .msg .ic.accent { background: rgba(41,128,178,.18); border: 1px solid rgba(41,128,178,.4); color: var(--accent-mid); }
+  .msg .ic.neutral { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); color: #B9C3CF; }
+  .msg .ic.warn { background: rgba(176,125,0,.18); border: 1px solid rgba(240,208,128,.4); color: #F4C95B; }
+  .msg .ic .app-icon svg { width: 34px; height: 34px; }
+  .msg h2 { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; margin: var(--sp-xs) 0 0; color: #fff; line-height: 1.25; }
+  .msg p { font-size: 14px; line-height: 1.6; color: #B9C3CF; margin: 0; max-width: 300px; }
+  .msg .priv { display: flex; align-items: flex-start; gap: 9px; text-align: left; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius-lg); padding: 13px 14px; margin-top: var(--sp-xs); }
+  .msg .priv .app-icon svg { width: 17px; height: 17px; color: var(--accent-mid); flex-shrink: 0; margin-top: 1px; }
+  .msg .priv p { font-size: 12.5px; color: #9aa6b4; max-width: none; }
+  .msg .priv b { color: #e7eaed; font-weight: 600; }
+
+  /* dark-surface buttons */
+  .btn-stack { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: var(--sp-sm); }
+  .dbtn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; border-radius: var(--radius-md); font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent; width: 100%; }
+  .dbtn .app-icon svg { width: 18px; height: 18px; }
+  .dbtn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .dbtn-secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.28); }
+  .dbtn-ghost { background: transparent; color: #B9C3CF; border-color: transparent; min-height: 44px; }
+
+  /* disclaimer on dark */
+  .disc { display: flex; gap: 10px; align-items: flex-start; text-align: left; background: rgba(41,128,178,.12); border-left: 3px solid var(--accent-mid); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 12px 13px; margin-top: var(--sp-sm); }
+  .disc .app-icon svg { width: 16px; height: 16px; color: var(--accent-mid); flex-shrink: 0; margin-top: 1px; }
+  .disc p { font-size: 11.5px; line-height: 1.5; color: #9aa6b4; margin: 0; max-width: none; }
+  .disc b { color: #e7eaed; font-weight: 600; }
+
+  /* spinner */
+  .spin { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,.18); border-top-color: var(--accent-mid); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .dots { font: 500 13px var(--font-mono); color: #6E7E93; }
+
+  /* ── Capturing flash + freeze ───────────────────────────────────── */
+  .flash { position: absolute; inset: 0; background: #fff; z-index: 55; opacity: .58; }
+  .haptic-ring { position: absolute; top: 50%; left: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 3px solid rgba(255,255,255,.8); border-radius: 50%; z-index: 50; }
+  .capturing-label { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(13,16,20,.7); color: #fff; font-size: 13px; font-weight: 600; padding: 8px 15px; border-radius: 100px; z-index: 56; display: flex; align-items: center; gap: 7px; }
+  .capturing-label .app-icon svg { width: 15px; height: 15px; }
+
+  /* ── Processing scan overlay ────────────────────────────────────── */
+  .scan-overlay { position: absolute; inset: 0; background: rgba(13,16,20,.5); z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-md); }
+  .scan-line { position: absolute; left: 8%; right: 8%; top: 38%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-mid), transparent); box-shadow: 0 0 12px 2px rgba(41,128,178,.6); }
+  .scan-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-54%); width: 230px; height: 280px; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,.45); }
+  .scan-overlay .lbl { font-size: 15px; font-weight: 600; color: #fff; }
+  .scan-overlay .sub { font-size: 12.5px; color: #B9C3CF; }
+
+  /* ── Review header + quality bar ────────────────────────────────── */
+  .review-top { position: relative; z-index: 40; display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 0; }
+  .review-title { font-size: 16px; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  .qbadge { position: absolute; top: calc(52px + 56px); left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; padding: 8px 15px; border-radius: 100px; font-size: 13px; font-weight: 700; z-index: 40; }
+  .qbadge .app-icon svg { width: 16px; height: 16px; }
+  .qbadge.green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .qbadge.amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+  /* advisory warning callout */
+  .callout { position: absolute; left: 16px; right: 16px; bottom: 168px; z-index: 40; display: flex; gap: 11px; align-items: flex-start; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--radius-lg); padding: 13px 14px; box-shadow: var(--shadow-md); }
+  .callout .app-icon svg { width: 19px; height: 19px; color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+  .callout .ct { font-size: 13.5px; font-weight: 700; color: var(--text-primary); }
+  .callout .cd { font-size: 12.5px; line-height: 1.5; color: var(--text-secondary); margin-top: 2px; }
+
+  /* review action bar */
+  .review-actions { position: relative; z-index: 40; background: var(--ink-900); padding: 16px 18px 30px; }
+  .review-actions .row { display: flex; gap: 12px; }
+  .review-actions .row .dbtn { flex: 1; }
+  .review-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; color: #6E7E93; margin-top: 12px; }
+  .review-note .app-icon svg { width: 13px; height: 13px; }
+
+  @media (max-width: 520px) {
+    .page { padding: var(--sp-xl) var(--sp-md) var(--sp-2xl); }
+    .grid { grid-template-columns: 1fr; }
+    .phone { transform: scale(.92); transform-origin: top center; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="page-head">
+    <div class="brandline">
+      <span class="mark"><span class="reticle"></span></span>
+      <span class="wm">Skin Lesion <b>XAI</b></span>
+    </div>
+    <h1>Camera capture — mobile experience</h1>
+    <p>A focused, medical-device-inspired capture flow for photographing a skin lesion. Quality guidance is advisory and never blocks capture; nothing is uploaded without confirmation. Eight states, rendered as labeled mobile frames.</p>
+    <div class="legend">
+      <span class="li"><span class="app-icon" data-l="lock"></span>Portrait orientation locked during capture</span>
+      <span class="li"><span class="app-icon" data-l="search"></span>Pinch-to-zoom supported</span>
+      <span class="li"><span class="app-icon" data-l="vibrate"></span>Haptic feedback on capture</span>
+      <span class="li"><span class="app-icon" data-l="accessibility"></span>44px min touch targets · WCAG AA overlay text</span>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- Reusable status bar + scaffolding injected by JS to keep markup DRY -->
+<script>
+const STATUSBAR = (onPhoto) => `
+  <div class="statusbar ${onPhoto ? 'on-photo' : ''}">
+    <span>9:41</span>
+    <span class="sb-right">
+      <span class="app-icon" data-l="signal"></span>
+      <span class="app-icon" data-l="wifi"></span>
+      <span class="batt"></span>
+    </span>
+  </div>`;
+
+const FRAMES = [
+  {
+    num: '01', name: 'Permission request',
+    caption: 'Camera access is requested with a plain-language reason and a privacy reassurance. A gallery path is offered so the flow is never a dead end.',
+    body: `
+      ${STATUSBAR(false)}
+      <div class="msg">
+        <div class="ic accent"><span class="app-icon" data-l="camera"></span></div>
+        <h2>Camera access needed to analyze skin images</h2>
+        <p>To photograph a lesion, allow camera access. You can also choose an existing photo from your gallery.</p>
+        <div class="priv">
+          <span class="app-icon" data-l="shield-check"></span>
+          <p><b>Your images stay private.</b> Photos remain on your device until you choose to analyze. No location data is collected without your consent.</p>
+        </div>
+        <div class="btn-stack">
+          <button class="dbtn dbtn-primary"><span class="app-icon" data-l="camera"></span>Allow camera access</button>
+          <button class="dbtn dbtn-secondary"><span class="app-icon" data-l="image"></span>Choose from gallery instead</button>
+        </div>
+        <div class="disc">
+          <span class="app-icon" data-l="shield-check"></span>
+          <p><b>This platform is not a medical diagnosis tool.</b> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+        </div>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '02', name: 'Camera initializing',
+    caption: 'A brief, calm loading state while the camera starts. Controls are present but inactive; the guide outline fades in so the user knows where to aim.',
+    body: `
+      ${STATUSBAR(false)}
+      <div class="vf">
+        <div class="vf-top">
+          <button class="cam-btn" disabled style="opacity:.4"><span class="app-icon" data-l="x"></span></button>
+          <button class="cam-btn" disabled style="opacity:.4"><span class="app-icon" data-l="zap-off"></span></button>
+        </div>
+        <div class="vf-mid">
+          <div class="guide" style="opacity:.3">
+            <div class="ring-outer"></div>
+            <div class="ring-inner"></div>
+          </div>
+          <div class="msg" style="position:absolute; inset:0; justify-content:center; gap:var(--sp-md);">
+            <div class="spin"></div>
+            <h2 style="font-size:17px;">Starting camera…</h2>
+            <p style="font-size:13px;">Point at good, even light for the clearest photo.</p>
+          </div>
+        </div>
+      </div>
+      <div class="ctrlbar solid">
+        <span class="side-l" style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.04);"></span>
+        <button class="capture" disabled style="opacity:.45"></button>
+        <span class="side-r" style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.04);"></span>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '03', name: 'Live preview with guidance overlay',
+    caption: 'Full-screen viewfinder with a dermoscopy-style elliptical guide and reticle. Top bar: <b>close</b> and <b>flash</b>. The body-map reference chip shows the target site. Three advisory indicators report distance, lighting and motion; the 64px shutter sits between gallery import and the body-map toggle.',
+    body: `
+      ${STATUSBAR(true)}
+      <div class="photo-base"></div>
+      <div class="vf">
+        <div class="vf-top">
+          <button class="cam-btn"><span class="app-icon" data-l="x"></span></button>
+          <div class="loc-chip"><span class="app-icon" data-l="map-pin"></span>Left forearm</div>
+          <button class="cam-btn on"><span class="app-icon" data-l="zap"></span></button>
+        </div>
+        <div class="vf-mid">
+          <div class="zoom">1.0×</div>
+          <div class="guide good">
+            <div class="scrim"></div>
+            <div class="ring-outer"></div>
+            <div class="ring-inner"></div>
+            <span class="tick tl"></span><span class="tick tr"></span>
+            <span class="tick bl"></span><span class="tick br"></span>
+            <div class="reticle-x"></div>
+          </div>
+          <div class="guide-hint">Center the lesion within the guide</div>
+          <div class="ind-row">
+            <span class="ind good"><span class="app-icon" data-l="check-circle"></span>Good distance</span>
+            <span class="ind good"><span class="app-icon" data-l="sun"></span>Good lighting</span>
+            <span class="ind good"><span class="app-icon" data-l="hand"></span>Hold steady</span>
+          </div>
+        </div>
+      </div>
+      <div class="ctrlbar">
+        <button class="side-btn side-l"><span class="app-icon" data-l="image"></span>Gallery</button>
+        <button class="capture" aria-label="Capture photo"></button>
+        <button class="side-btn side-r"><span class="app-icon" data-l="map-pin"></span>Body map</button>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '04', name: 'Capturing',
+    caption: 'The shutter fires: a brief flash, the button presses, and a haptic pulse confirms the capture. Portrait orientation stays locked through the moment.',
+    body: `
+      ${STATUSBAR(true)}
+      <div class="photo-base"></div>
+      <div class="vf">
+        <div class="vf-top">
+          <button class="cam-btn" style="opacity:.5"><span class="app-icon" data-l="x"></span></button>
+          <div class="loc-chip" style="opacity:.6"><span class="app-icon" data-l="map-pin"></span>Left forearm</div>
+          <button class="cam-btn on" style="opacity:.5"><span class="app-icon" data-l="zap"></span></button>
+        </div>
+        <div class="vf-mid">
+          <div class="guide good" style="opacity:.5">
+            <div class="ring-outer"></div>
+          </div>
+          <div class="haptic-ring"></div>
+          <div class="capturing-label"><span class="app-icon" data-l="vibrate"></span>Captured</div>
+        </div>
+      </div>
+      <div class="flash"></div>
+      <div class="ctrlbar">
+        <button class="side-btn side-l" style="opacity:.5"><span class="app-icon" data-l="image"></span>Gallery</button>
+        <button class="capture pressed"></button>
+        <button class="side-btn side-r" style="opacity:.5"><span class="app-icon" data-l="map-pin"></span>Body map</button>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '05', name: 'Quality check processing',
+    caption: 'The captured image is checked for focus, framing and lighting before review. This is a quick, on-device step — described plainly, never counting down.',
+    body: `
+      ${STATUSBAR(true)}
+      <div class="photo-base review"></div>
+      <div class="scan-overlay">
+        <div class="scan-frame"></div>
+        <div class="scan-line"></div>
+        <div class="spin"></div>
+        <div class="lbl">Checking image quality…</div>
+        <div class="sub">Reviewing focus, framing and lighting</div>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '06', name: 'Review captured image',
+    caption: 'The captured photo fills the screen with a clear quality score. <b>Retake</b> and <b>Use photo</b> are equally reachable. A note confirms nothing is uploaded until the user chooses.',
+    body: `
+      ${STATUSBAR(true)}
+      <div class="photo-base review"></div>
+      <div class="review-top">
+        <button class="cam-btn"><span class="app-icon" data-l="chevron-left"></span></button>
+        <span class="review-title">Review photo</span>
+        <span style="width:44px"></span>
+      </div>
+      <div class="qbadge green"><span class="app-icon" data-l="check-circle"></span>Good quality</div>
+      <div style="flex:1"></div>
+      <div class="review-actions">
+        <div class="row">
+          <button class="dbtn dbtn-secondary"><span class="app-icon" data-l="rotate-ccw"></span>Retake</button>
+          <button class="dbtn dbtn-primary"><span class="app-icon" data-l="check"></span>Use photo</button>
+        </div>
+        <div class="review-note"><span class="app-icon" data-l="lock"></span>Nothing is uploaded until you choose to analyze.</div>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '07', name: 'Quality warning (advisory)',
+    caption: 'When quality is low, an <b>advisory</b> amber callout explains the issue and recommends a retake — but capture is never blocked. The user may still use the photo. Red is reserved for urgent clinical status, so it is never used here.',
+    body: `
+      ${STATUSBAR(true)}
+      <div class="photo-base review photo-blur"></div>
+      <div class="review-top">
+        <button class="cam-btn"><span class="app-icon" data-l="chevron-left"></span></button>
+        <span class="review-title">Review photo</span>
+        <span style="width:44px"></span>
+      </div>
+      <div class="qbadge amber"><span class="app-icon" data-l="alert-triangle"></span>Retake recommended</div>
+      <div style="flex:1"></div>
+      <div class="callout">
+        <span class="app-icon" data-l="alert-triangle"></span>
+        <div>
+          <div class="ct">Image looks slightly blurry</div>
+          <div class="cd">A sharper photo helps the model focus on the lesion. Try holding steady and tapping to focus — or use this photo anyway.</div>
+        </div>
+      </div>
+      <div class="review-actions">
+        <div class="row">
+          <button class="dbtn dbtn-primary"><span class="app-icon" data-l="rotate-ccw"></span>Retake photo</button>
+          <button class="dbtn dbtn-secondary"><span class="app-icon" data-l="check"></span>Use anyway</button>
+        </div>
+        <div class="review-note"><span class="app-icon" data-l="lock"></span>Nothing is uploaded until you choose to analyze.</div>
+      </div>
+      <div class="home-ind"></div>`
+  },
+  {
+    num: '08', name: 'Error — camera unavailable / permission denied',
+    caption: 'If camera access is denied or the camera is unavailable, the state stays calm and non-blaming, points to Settings to re-enable access, and keeps the gallery path open as a fallback.',
+    body: `
+      ${STATUSBAR(false)}
+      <div class="msg">
+        <div class="ic neutral"><span class="app-icon" data-l="camera-off"></span></div>
+        <h2>Camera access is turned off</h2>
+        <p>To photograph a lesion, turn on camera access for Skin Lesion XAI in Settings. You can still choose an existing photo from your gallery.</p>
+        <div class="btn-stack">
+          <button class="dbtn dbtn-primary"><span class="app-icon" data-l="settings"></span>Open settings</button>
+          <button class="dbtn dbtn-secondary"><span class="app-icon" data-l="image"></span>Choose from gallery</button>
+          <button class="dbtn dbtn-ghost"><span class="app-icon" data-l="rotate-ccw"></span>Try again</button>
+        </div>
+        <div class="disc">
+          <span class="app-icon" data-l="shield-check"></span>
+          <p><b>This platform is not a medical diagnosis tool.</b> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+        </div>
+      </div>
+      <div class="home-ind"></div>`
+  },
+];
+
+const grid = document.getElementById('grid');
+grid.innerHTML = FRAMES.map(f => `
+  <div class="frame">
+    <div class="frame-label"><span class="num">${f.num}</span><span class="name">${f.name}</span></div>
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">${f.body}</div>
+    </div>
+    <p class="frame-caption">${f.caption}</p>
+  </div>
+`).join('');
+
+// Lucide uses data-lucide; we used data-l to inject after build.
+document.querySelectorAll('[data-l]').forEach(el => {
+  const i = document.createElement('i');
+  i.setAttribute('data-lucide', el.getAttribute('data-l'));
+  el.appendChild(i);
+});
+lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research &amp; Model Performance — Skin Lesion XAI</title>
+  <link rel="stylesheet" href="assets/colors_and_type.css" />
+  <link rel="stylesheet" href="assets/app.css" />
+  <link rel="stylesheet" href="research-dashboard.css" />
+</head>
+<body>
+  <main class="gallery">
+    <div class="gallery-head">
+      <p class="eyebrow">Internal · Research &amp; platform operations</p>
+      <h1>Research &amp; model performance dashboard</h1>
+      <p>Monitoring console for ML researchers and platform administrators — model quality, calibration, fairness across cohorts, active-learning supply, explanation quality, and distribution drift.</p>
+      <span class="priv"><span class="app-icon"><i data-lucide="shield-check"></i></span>Aggregate &amp; de-identified only — no individual patient data is exposed in any state</span>
+    </div>
+
+    <section class="gallery-sec">
+      <div class="gallery-sec-head">
+        <h2>Live console</h2>
+        <p>Interactive — switch the <b>date range</b> and <b>model version</b>, and toggle between the <b>Researcher</b> and <b>Administrator</b> role. The view rebuilds from real aggregate data on every change.</p>
+      </div>
+      <div class="frame">
+        <div class="frame-body" id="live"></div>
+      </div>
+    </section>
+
+    <section class="gallery-sec">
+      <div class="gallery-sec-head">
+        <h2>Operational states</h2>
+        <p>Every required state rendered as a labeled reference frame.</p>
+      </div>
+      <div id="frames"></div>
+    </section>
+
+    <section class="gallery-sec">
+      <div class="gallery-sec-head">
+        <h2>Mobile</h2>
+        <p>The same console at a 390&nbsp;px viewport — sidebar collapses to a menu, KPI and chart grids reflow to a single column, and the confusion matrix scrolls horizontally.</p>
+      </div>
+      <div id="phones" class="phones"></div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="charts.js"></script>
+  <script src="data.js"></script>
+  <script src="sections.js"></script>
+  <script src="vm.js"></script>
+  <script src="app.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+    });
+  </script>
+</body>
+</html>

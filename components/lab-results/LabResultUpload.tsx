@@ -43,15 +43,15 @@ export function LabResultUpload() {
   }
 
   return (
-    <div className="card">
-      <h2>Upload Lab Result</h2>
+    <div className="app-card">
+      <p className="app-card__eyebrow">Private upload</p>
+      <h2>Upload lab result</h2>
       <p className="caption">
-        Upload a PDF or photo of your lab report. Your doctor can only access it if you check
-        the sharing box below.
+        Upload a PDF or photo of your lab report. Your doctor can only access it
+        if you check the sharing box below.
       </p>
 
       <form onSubmit={handleSubmit} className="form-stack">
-        {/* File */}
         <label>
           <span className="label">Lab report file (PDF or image)</span>
           <input
@@ -62,19 +62,16 @@ export function LabResultUpload() {
           />
         </label>
 
-        {/* Lab name */}
         <label>
           <span className="label">Lab provider / lab name (optional)</span>
           <input
             type="text"
-            placeholder="e.g. Charité Berlin"
+            placeholder="e.g. Berlin dermatology lab"
             value={labName}
             onChange={(e) => setLabName(e.target.value)}
           />
         </label>
 
-        {/* Test date — collected as text, parsed server-side in future */}
-        {/* Patient note */}
         <label>
           <span className="label">Your note (optional)</span>
           <textarea
@@ -85,7 +82,6 @@ export function LabResultUpload() {
           />
         </label>
 
-        {/* Consent checkbox */}
         <label className="checkbox-label">
           <input
             type="checkbox"
@@ -96,12 +92,10 @@ export function LabResultUpload() {
         </label>
 
         <button type="submit" disabled={!file || status === "uploading"} className="btn-primary">
-          {status === "uploading" ? "Uploading…" : "Upload"}
+          {status === "uploading" ? "Uploading..." : "Upload"}
         </button>
 
-        {status === "success" && (
-          <p className="success-msg">Lab result uploaded successfully.</p>
-        )}
+        {status === "success" && <p className="success-msg">Lab result uploaded successfully.</p>}
         {status === "error" && <p className="error-msg">{errorMsg}</p>}
       </form>
     </div>

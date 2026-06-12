@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClinicalAppShell, SectionCard, StatusPill } from "@/components/app/ClinicalAppShell";
 
 export const metadata: Metadata = {
   title: "AI Limitations",
@@ -11,19 +12,38 @@ export const metadata: Metadata = {
 
 export default function AiLimitationsPage() {
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">AI Limitations</h1>
-        <p className="text-gray-600">
-          AI outputs can be affected by image quality, training data,
-          calibration, and workflow context.
-        </p>
-        <p className="text-gray-600">
-          This platform is not a medical diagnosis tool. It provides
-          educational AI-supported information and helps organize lesion
-          history for professional review.
-        </p>
+    <ClinicalAppShell
+      eyebrow="Education"
+      title="AI limitations"
+      lead="Understand where educational AI assistance can help, where it can fail, and why professional review remains the important next step."
+      actions={[
+        { href: "/education", label: "Education hub", variant: "ghost" },
+        { href: "/analyze", label: "Analyze safely" },
+      ]}
+    >
+      <div className="article-grid">
+        <SectionCard title="What can affect output" eyebrow="Limitations">
+          <div className="stack-list">
+            {[
+              "Blurry, low-light, overexposed, or cropped photos can reduce usefulness.",
+              "Training data may not represent every skin tone, body location, camera, or lesion type equally.",
+              "Grad-CAM highlights model attention, not a diagnosis or proof of disease.",
+              "Confidence scores need calibration and clinical context before they are useful.",
+            ].map((item) => (
+              <p key={item}>{item}</p>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Safe interpretation" eyebrow="Patient guidance">
+          <StatusPill tone="warn">Not a diagnosis</StatusPill>
+          <p>
+            Use this platform to organize photos, notes, and follow-up questions.
+            Any concerning change, symptom, or uncertainty should be reviewed by a
+            qualified medical professional.
+          </p>
+        </SectionCard>
       </div>
-    </main>
+    </ClinicalAppShell>
   );
 }

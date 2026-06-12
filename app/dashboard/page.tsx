@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ClinicalAppShell, SectionCard, StatGrid, StatusPill } from "@/components/app/ClinicalAppShell";
 
 export const metadata: Metadata = {
   title: "Patient Dashboard",
@@ -10,41 +12,52 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <main className="dashboard-shell">
-      <section className="dashboard-header">
-        <p className="eyebrow">Monitoring dashboard</p>
-        <h1>Patient Dashboard</h1>
-        <p>
-          Track lesion profiles, recent AI analyses, privacy settings, lab
-          result tasks, and doctor-review preparation in one place.
-        </p>
-      </section>
-      <section className="dashboard-grid" aria-label="Dashboard summary">
-        <article className="dashboard-tile">
-          <span>Total lesions</span>
-          <strong>0</strong>
-        </article>
-        <article className="dashboard-tile">
-          <span>Need follow-up</span>
-          <strong>0</strong>
-        </article>
-        <article className="dashboard-tile">
-          <span>Recent analyses</span>
-          <strong>0</strong>
-        </article>
-        <article className="dashboard-tile">
-          <span>Lab results pending</span>
-          <strong>0</strong>
-        </article>
-      </section>
-      <nav className="dashboard-nav" aria-label="Dashboard navigation">
-        <a href="/lesions">My Lesions</a>
-        <a href="/body-map">Body Map</a>
-        <a href="/analyze">Analyze</a>
-        <a href="/lab-results">Lab Results</a>
-        <a href="/privacy">Privacy</a>
-        <a href="/reports">Reports</a>
-      </nav>
-    </main>
+    <ClinicalAppShell
+      eyebrow="Monitoring dashboard"
+      title="Patient dashboard"
+      lead="Track lesion profiles, recent educational AI analyses, reminders, privacy settings, and doctor-review preparation in one place."
+      actions={[
+        { href: "/analyze", label: "Analyze photo" },
+        { href: "/privacy", label: "Privacy settings", variant: "ghost" },
+      ]}
+    >
+      <StatGrid
+        stats={[
+          { label: "Tracked lesions", value: "3", note: "1 needs review", tone: "warn" },
+          { label: "Recent analyses", value: "4", note: "Last 30 days", tone: "info" },
+          { label: "Follow-ups", value: "2", note: "Scheduled", tone: "ok" },
+          { label: "Privacy mode", value: "Balanced", note: "Thumbnail only", tone: "neutral" },
+        ]}
+      />
+
+      <div className="app-two-column">
+        <SectionCard title="Next best actions" eyebrow="Today">
+          <div className="action-list">
+            <Link href="/analyze">Upload a clearer shoulder retake</Link>
+            <Link href="/reports">Prepare a doctor review packet</Link>
+            <Link href="/body-map">Confirm body map locations</Link>
+            <Link href="/reminders">Update follow-up reminders</Link>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Recent activity" eyebrow="Timeline">
+          <div className="timeline-list">
+            {[
+              ["Today", "Grad-CAM review packet drafted", "Doctor review recommended"],
+              ["Yesterday", "Body map location added", "Awaiting verification"],
+              ["May 28", "Privacy mode updated", "Balanced mode active"],
+            ].map(([date, title, status]) => (
+              <article key={title}>
+                <span>{date}</span>
+                <h3>{title}</h3>
+                <StatusPill tone={status.includes("recommended") ? "warn" : "info"}>
+                  {status}
+                </StatusPill>
+              </article>
+            ))}
+          </div>
+        </SectionCard>
+      </div>
+    </ClinicalAppShell>
   );
 }

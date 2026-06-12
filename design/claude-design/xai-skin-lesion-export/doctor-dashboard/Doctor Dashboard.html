@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skin Lesion XAI — Doctor dashboard</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="app.css" />
+<link rel="stylesheet" href="showcase.css" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div class="showcase">
+  <div class="sc-wrap" id="sc-wrap"></div>
+</div>
+
+<script>
+/* ============================================================================
+   Doctor dashboard — labeled-frame showcase (vanilla JS template renderer)
+   No patient identity anywhere: cases carry an opaque case ID + a stable
+   pseudonym. Status is always color + icon + text. 44px touch targets.
+   ============================================================================ */
+
+const ic = (name) => `<span class="app-icon"><i data-lucide="${name}"></i></span>`;
+
+/* ── Status (AI result band) + priority metadata ─────────────────────── */
+const BAND = {
+  benign:  { tone:'green',  icon:'check-circle',   label:'Low concern' },
+  monitor: { tone:'amber',  icon:'alert-triangle', label:'Monitor' },
+  review:  { tone:'blue',   icon:'stethoscope',    label:'Review recommended' },
+};
+const PRIORITY = {
+  urgent:   { tone:'red',   icon:'alert-octagon', label:'Urgent' },
+  priority: { tone:'amber', icon:'flag',          label:'Priority' },
+};
+const bandChip = (b) => `<span class="chip ${BAND[b].tone}">${ic(BAND[b].icon)}${BAND[b].label}</span>`;
+const prioChip = (p) => p ? `<span class="chip ${PRIORITY[p].tone}">${ic(PRIORITY[p].icon)}${PRIORITY[p].label}</span>` : '';
+
+/* ── Case data (pseudonymized — no names, no PHI) ─────────────────────── */
+const CASES = [
+  { id:'CSE-2026-0418', pseudo:'CEDAR-8841', region:'Right shoulder', date:'2026-06-04', dateLabel:'4 Jun 2026', band:'review',  priority:'urgent' },
+  { id:'CSE-2026-0413', pseudo:'HELIX-2207', region:'Upper back',     date:'2026-06-03', dateLabel:'3 Jun 2026', band:'monitor', priority:'priority' },
+  { id:'CSE-2026-0410', pseudo:'ORBIT-5530', region:'Left forearm',   date:'2026-06-03', dateLabel:'3 Jun 2026', band:'benign',  priority:null },
+  { id:'CSE-2026-0407', pseudo:'MAPLE-1188', region:'Right calf',     date:'2026-06-02', dateLabel:'2 Jun 2026', band:'monitor', priority:null },
+  { id:'CSE-2026-0401', pseudo:'SLATE-7042', region:'Scalp',          date:'2026-06-01', dateLabel:'1 Jun 2026', band:'benign',  priority:null },
+];
+const SELECTED_ID = 'CSE-2026-0413';
+const sel = CASES.find(c => c.id === SELECTED_ID);
+
+/* ── Grad-CAM viewer (neutral CSS stand-in; no fabricated medical photo) ─ */
+function viewer({ noisy=false, mode='overlay' } = {}) {
+  const heatBg = noisy
+    ? '' /* class drives noisy gradient */
+    : 'background: radial-gradient(circle at 48% 47%, rgba(255,60,40,.95) 0%, rgba(255,170,30,.8) 14%, rgba(120,220,90,.55) 30%, rgba(40,120,220,.4) 48%, rgba(20,30,90,0) 70%);';
+  return `
+  <div class="viewer">
+    <div class="viewer-stage">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 45%, #c9a890 0%, #b8917a 30%, #8f6f5e 70%, #6b5346 100%);">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 48% 47%, rgba(60,40,32,.55) 0%, rgba(60,40,32,0) 26%);"></div>
+      </div>
+      <div class="heat ${noisy ? 'heat-noisy-overlay' : ''}" style="position:absolute;inset:0;opacity:.65;${heatBg}"></div>
+      ${noisy ? `<div class="viewer-flag">${ic('alert-triangle')}Low heatmap reliability</div>` : ''}
+    </div>
+    <div class="viewer-bar">
+      <div class="seg" role="tablist" aria-label="View mode">
+        <button>Original</button>
+        <button>Heatmap</button>
+        <button class="on">Overlay</button>
+      </div>
+      <label class="opacity-ctrl">Opacity
+        <input type="range" min="0" max="100" value="65" aria-label="Heatmap opacity" />
+      </label>
+    </div>
+  </div>`;
+}
+
+/* ── Body map pin location ───────────────────────────────────────────── */
+function bodyMap() {
+  return `
+  <div class="bodymap">
+    <div class="bm-fig">
+      <svg width="62" height="120" viewBox="0 0 62 120" aria-label="Body map, back view, upper back region highlighted">
+        <circle class="bm-sil" cx="31" cy="13" r="9"/>
+        <path class="bm-sil" d="M18 26 q13 -6 26 0 l5 26 -7 3 -2 28 q-2 30 -3 32 l-7 0 -2 -30 -2 30 -7 0 q-1 -2 -3 -32 l-2 -28 -7 -3 z"/>
+        <rect class="bm-region" x="22" y="30" width="18" height="15" rx="4"/>
+      </svg>
+    </div>
+    <div class="bm-info">
+      <div class="bm-region-name">Upper back · paraspinal</div>
+      <div class="bm-coord">Pin 03 · approx. T4 level, left of midline</div>
+      <span class="bm-view">${ic('map-pin')}Back view</span>
+    </div>
+  </div>`;
+}
+
+/* ── Lab results (only what's on file; no fabricated values) ──────────── */
+function labResults() {
+  return `
+  <div class="lab-row">
+    <div class="lab-ic">${ic('file-text')}</div>
+    <div class="lab-main">
+      <div class="lab-name">Dermoscopy capture</div>
+      <div class="lab-meta">PDF · added 2 Jun 2026</div>
+    </div>
+    <a class="lab-link" href="#" onclick="return false">${ic('external-link')}Open</a>
+  </div>
+  <div class="lab-none">${ic('minus-circle')}Histopathology — not on file for this case</div>`;
+}
+
+/* ── Professional opinion form ───────────────────────────────────────── */
+const VERDICTS = [
+  { k:'benign',   label:'Consistent with benign features' },
+  { k:'concern',  label:'Shows concerning features' },
+  { k:'review',   label:'Requires further review' },
+];
+function opinionForm({ selected=null, disabled=false, loading=false, notes='' } = {}) {
+  const opts = VERDICTS.map(v => `
+    <div class="verdict-opt ${selected===v.k ? 'sel' : ''}" role="radio" aria-checked="${selected===v.k}" tabindex="0">
+      <span class="ring"></span>${v.label}
+    </div>`).join('');
+  const btn = loading
+    ? `<button class="btn btn-primary is-loading" disabled><span class="btn-spinner" aria-hidden="true"></span>Submitting opinion…</button>`
+    : `<button class="btn btn-primary"${selected ? '' : ' disabled style="opacity:.5;cursor:not-allowed"'}>${ic('check')}Submit professional opinion</button>`;
+  return `
+  <div class="opinion-form ${disabled ? 'is-disabled' : ''}">
+    <p class="edu-note">Educational opinion recorded to the patient's lesion history — this is a professional review, not a medical diagnosis. No treatment is prescribed here.</p>
+    <div class="verdict-opts" role="radiogroup" aria-label="Professional opinion">${opts}</div>
+    <textarea class="notes" placeholder="Notes for the patient's record (optional)…" style="margin-top:var(--sp-sm)">${notes}</textarea>
+    <div style="margin-top:var(--sp-md);display:flex;gap:var(--sp-sm);align-items:center;flex-wrap:wrap">
+      ${btn}
+      <button class="btn btn-ghost">Skip for now</button>
+    </div>
+    ${loading
+      ? `<div class="form-hint">${ic('loader')}Recording your opinion and updating the patient's history…</div>`
+      : (selected ? '' : `<div class="form-hint">${ic('info')}Select an option to enable submit.</div>`)}
+  </div>`;
+}
+
+/* ── Review history + trend ──────────────────────────────────────────── */
+function reviewHistory() {
+  const items = [
+    { v:'Requires further review', date:'2 May 2026', note:'Mild asymmetry on the upper border; requested a re-image in four weeks.' },
+    { v:'Consistent with benign features', date:'6 Mar 2026', muted:true, note:'Even pigmentation and regular borders at first capture.' },
+  ];
+  const rows = items.map((it, i) => `
+    <div class="hist-item">
+      <div class="hist-rail"><span class="dot ${it.muted ? 'muted' : ''}"></span>${i < items.length-1 ? '<span class="line"></span>' : ''}</div>
+      <div class="hist-main">
+        <div class="hist-top"><span class="hist-verdict">${it.v}</span><span class="hist-date">${it.date}</span></div>
+        <div class="hist-by">Recorded by you · educational review</div>
+        <div class="hist-note">${it.note}</div>
+      </div>
+    </div>`).join('');
+  return `
+  <div class="history-list">${rows}</div>
+  <div class="trend">
+    <div class="tr-top">
+      <span class="tr-label">Lesion diameter over time</span>
+      <span class="tr-val">4.1 → 4.4 → <b>5.2 mm</b> · ▲ +1.1 mm</span>
+    </div>
+    <div class="tr-bars">
+      <div class="tr-bar"><div class="bar" style="height:30px"></div><span class="cap">6 Mar</span></div>
+      <div class="tr-bar"><div class="bar" style="height:36px"></div><span class="cap">2 May</span></div>
+      <div class="tr-bar"><div class="bar amber" style="height:52px"></div><span class="cap">3 Jun</span></div>
+    </div>
+  </div>`;
+}
+
+const disclaimer = () => `
+  <div class="disclaimer">${ic('shield-check')}
+    <p><strong>This platform is not a medical diagnosis tool.</strong> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+  </div>`;
+
+/* ── Queue column ────────────────────────────────────────────────────── */
+function queueRow(c, selectedId) {
+  return `
+  <div class="q-row ${c.id===selectedId ? 'sel' : ''}">
+    <div class="q-thumb"></div>
+    <div class="q-main">
+      <div class="q-top"><span class="q-id">${c.id}</span><span class="q-date">${c.dateLabel}</span></div>
+      <div class="q-loc">${c.region} · <span class="q-pseudo">${c.pseudo}</span></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${bandChip(c.band)}${prioChip(c.priority)}</div>
+    </div>
+  </div>`;
+}
+function queueColumn(cases, selectedId) {
+  return `
+  <div>
+    <div class="queue-meta"><div class="section-head" style="margin:0;flex:1"><h2>Cases pending review</h2></div><span class="chip neutral">${cases.length}</span></div>
+    <div class="card queue-list">${cases.map(c => queueRow(c, selectedId)).join('')}</div>
+    <div class="queue-caughtup">${ic('clock')}Sorted by priority, then submission date.</div>
+  </div>`;
+}
+function queueEmpty() {
+  return `
+  <div>
+    <div class="queue-meta"><div class="section-head" style="margin:0;flex:1"><h2>Cases pending review</h2></div><span class="chip neutral">0</span></div>
+    <div class="card empty">
+      <div class="ei" style="background:var(--green-bg);color:var(--green)">${ic('check-circle')}</div>
+      <h3>No cases pending review</h3>
+      <p>You're all caught up. New submissions appear here when a patient requests professional review.</p>
+      <span class="muted" style="font-size:12px">Last case reviewed: 4 Jun 2026 · 14:20</span>
+    </div>
+  </div>`;
+}
+
+/* ── Detail panel ────────────────────────────────────────────────────── */
+function detailHead(c) {
+  return `
+  <div class="detail-head">
+    <div class="dh-l">
+      <p class="eyebrow">Case</p>
+      <div class="dh-id">${c.id}</div>
+      <div class="dh-sub"><span>Pseudonym <b>${c.pseudo}</b></span><span class="sep"></span><span>Submitted ${c.dateLabel}</span><span class="sep"></span><span>${c.region}</span></div>
+    </div>
+    <div class="dh-r">${bandChip(c.band)}${prioChip(c.priority)}</div>
+  </div>`;
+}
+function aiExplanation(noisy) {
+  if (noisy) {
+    return `
+    <div class="detail-section">
+      <h4>AI explanation</h4>
+      <p>The model assigned a <b>Monitor</b> band, but the explanation heatmap is diffuse and spreads beyond the lesion onto surrounding skin and a hair shadow. The areas of interest do not align cleanly with the lesion, so the explanation should carry less weight in your assessment.</p>
+    </div>
+    <div class="heat-callout">${ic('alert-triangle')}
+      <div>
+        <div class="hc-t">Heatmap reliability is low</div>
+        <div class="hc-d">Activation is scattered and partly off-lesion (possible hair or lighting artifact). Treat the AI explanation as unreliable for this image and rely on your own review. Consider requesting a re-image in better lighting.</div>
+      </div>
+    </div>`;
+  }
+  return `
+  <div class="detail-section">
+    <h4>AI explanation</h4>
+    <p>Activation concentrates on the central pigmented area with mild asymmetry along the upper border, suggesting the <b>Monitor</b> band is grounded in the lesion itself rather than surrounding skin. Educational output — not a diagnosis.</p>
+    <div style="margin-top:10px"><span class="chip green">${ic('layers')}Heatmap quality: clean</span></div>
+  </div>`;
+}
+function detailPanel(c, { noisy=false, formState={} } = {}) {
+  return `
+  <div class="detail">
+    ${detailHead(c)}
+    ${viewer({ noisy })}
+    <div class="card" style="margin-top:var(--sp-md)">
+      ${aiExplanation(noisy)}
+      <div class="detail-section">
+        <h4>Patient-submitted notes</h4>
+        <p>"Noticed it looks slightly larger than last month. No itching or bleeding, but it catches on clothing."</p>
+      </div>
+      <div class="detail-section">
+        <h4>Body-map location</h4>
+        ${bodyMap()}
+      </div>
+      <div class="detail-section">
+        <h4>Lab results</h4>
+        ${labResults()}
+      </div>
+      <div class="detail-section">
+        <h4>Your professional opinion</h4>
+        ${opinionForm(formState)}
+      </div>
+      <div class="detail-section">
+        <h4>Review history</h4>
+        ${reviewHistory()}
+      </div>
+      <div class="detail-foot">${disclaimer()}</div>
+    </div>
+  </div>`;
+}
+function detailPlaceholder() {
+  return `
+  <div class="card placeholder" style="margin-top:42px">
+    <div class="pi">${ic('inbox')}</div>
+    <h3>Nothing to review right now</h3>
+    <p>When a patient requests professional review, their pseudonymized case opens here with the image, explanation heatmap, notes, and history.</p>
+    <div style="max-width:420px;margin:var(--sp-lg) auto 0">${disclaimer()}</div>
+  </div>`;
+}
+function successPanel(c) {
+  return `
+  <div class="detail">
+    <div style="margin-bottom:var(--sp-md)">
+      <div class="toast">${ic('check-circle')}
+        <div>
+          <div class="ts-t">Professional opinion submitted</div>
+          <div class="ts-d">Your educational review for ${c.id} has been recorded and the case removed from your queue. The patient will be notified.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="success-panel">
+        <div class="sp-ic">${ic('clipboard-check')}</div>
+        <h3>Review recorded</h3>
+        <p>This opinion is now part of the patient's lesion history for ${c.pseudo}. No diagnosis or treatment was issued.</p>
+        <div class="success-recap">
+          <div class="rc-row"><span class="rc-k">Case</span><span class="rc-v">${c.id}</span></div>
+          <div class="rc-row"><span class="rc-k">Opinion</span><span class="rc-v">Requires further review</span></div>
+          <div class="rc-row"><span class="rc-k">Recorded</span><span class="rc-v">4 Jun 2026 · 14:22</span></div>
+        </div>
+        <div style="display:flex;gap:var(--sp-sm);margin-top:var(--sp-md)">
+          <button class="btn btn-primary">${ic('arrow-right')}Next case</button>
+          <button class="btn btn-ghost">Back to queue</button>
+        </div>
+      </div>
+      <div class="detail-foot">${disclaimer()}</div>
+    </div>
+  </div>`;
+}
+
+/* ── Desktop app shell ───────────────────────────────────────────────── */
+const DOCTOR_NAV = [
+  { id:'queue',   label:'Review queue', icon:'inbox', active:true },
+  { id:'labs',    label:'Lab results',  icon:'file-text' },
+  { id:'history', label:'Case history', icon:'history' },
+];
+function desktopApp(centerHtml, { notif=2 } = {}) {
+  const nav = DOCTOR_NAV.map(n => `<button class="nav-item ${n.active ? 'active' : ''}">${ic(n.icon)}${n.label}</button>`).join('');
+  return `
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="mark"><div class="reticle"></div></div><div class="wm">Skin Lesion <b>XAI</b></div></div>
+      <div class="nav-label">Clinician</div>
+      ${nav}
+      <div class="sidebar-foot"><div class="sidebar-user"><div class="avatar">RA</div><div><div class="nm">Dr. R. Adeyemi</div><div class="rl">Dermatology · Reviewer</div></div></div></div>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <h1>Doctor review queue</h1>
+        <div class="topbar-right">
+          <button class="icon-btn" aria-label="Notifications">${ic('bell')}${notif>0 ? '<span class="dot"></span>' : ''}</button>
+          <button class="icon-btn" aria-label="Settings">${ic('settings')}</button>
+        </div>
+      </header>
+      <main class="content"><div class="content-inner"><div class="queue-layout">${centerHtml}</div></div></main>
+    </div>
+  </div>`;
+}
+
+/* ── Mobile app (container-scoped stacked layout) ────────────────────── */
+function mobileShell(inner, { activeTab='queue', back=false, title='Review queue' } = {}) {
+  const tabs = [
+    { id:'queue', label:'Queue', icon:'inbox' },
+    { id:'labs', label:'Labs', icon:'file-text' },
+    { id:'history', label:'History', icon:'history' },
+  ].map(t => `<div class="m-tab ${t.id===activeTab ? 'on' : ''}">${ic(t.icon)}${t.label}</div>`).join('');
+  const head = back
+    ? `<button class="icon-btn" aria-label="Back to queue">${ic('arrow-left')}</button><div class="m-title">${title}</div><button class="icon-btn" aria-label="Notifications">${ic('bell')}</button>`
+    : `<div class="m-brand"><div class="m-mark"><div class="m-reticle"></div></div><div class="m-title">Skin Lesion <b>XAI</b></div></div><button class="icon-btn" aria-label="Notifications">${ic('bell')}<span class="dot"></span></button>`;
+  return `
+  <div class="device-phone">
+    <div class="notch"></div>
+    <div class="phone-screen">
+      <div class="phone-statusbar"><span>9:41</span><span class="sb-r">${ic('signal')}${ic('wifi')}${ic('battery-full')}</span></div>
+      <div class="m-app">
+        <div class="m-topbar">${head}</div>
+        <div class="m-scroll">${inner}</div>
+        <div class="m-tabbar">${tabs}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* mobile queue list */
+function mQueueRow(c) {
+  return `
+  <div class="q-row" style="border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px">
+    <div class="q-thumb" style="width:40px;height:40px"></div>
+    <div class="q-main">
+      <div class="q-top"><span class="q-id" style="font-size:11px">${c.id}</span><span class="q-date">${c.dateLabel}</span></div>
+      <div class="q-loc" style="font-size:12px;margin:2px 0 5px">${c.region}</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${bandChip(c.band)}${prioChip(c.priority)}</div>
+    </div>
+  </div>`;
+}
+function mQueue(cases) {
+  return `
+  <div class="m-section-title">Cases pending review <span class="chip neutral">${cases.length}</span></div>
+  <div>${cases.map(mQueueRow).join('')}</div>`;
+}
+function mQueueEmpty() {
+  return `
+  <div class="m-section-title">Cases pending review <span class="chip neutral">0</span></div>
+  <div class="card empty" style="padding:var(--sp-2xl) var(--sp-md)">
+    <div class="ei" style="background:var(--green-bg);color:var(--green)">${ic('check-circle')}</div>
+    <h3>No cases pending review</h3>
+    <p>You're all caught up. New submissions appear here when a patient requests review.</p>
+  </div>`;
+}
+
+/* mobile detail (stacked) */
+function mDetail(c, { noisy=false, formState={} } = {}) {
+  return `
+  <div class="m-detail-card">
+    <div style="padding:13px 14px 0">
+      <div class="dh-id" style="font-size:15px">${c.id}</div>
+      <div class="dh-sub" style="font-size:11.5px;margin-top:4px"><span>Pseudonym <b>${c.pseudo}</b></span></div>
+      <div class="dh-sub" style="font-size:11.5px;margin:6px 0 12px"><span>${c.region}</span><span class="sep"></span><span>${c.dateLabel}</span></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px">${bandChip(c.band)}${prioChip(c.priority)}</div>
+    </div>
+    ${viewer({ noisy })}
+    ${aiExplanation(noisy)}
+    <div class="detail-section"><h4>Patient-submitted notes</h4><p>"Looks slightly larger than last month. No itching or bleeding."</p></div>
+    <div class="detail-section"><h4>Body-map location</h4>${bodyMap()}</div>
+    <div class="detail-section"><h4>Lab results</h4>${labResults()}</div>
+    <div class="detail-section"><h4>Your professional opinion</h4>${opinionForm(formState)}</div>
+    <div class="detail-section"><h4>Review history</h4>${reviewHistory()}</div>
+    <div class="detail-foot">${disclaimer()}</div>
+  </div>`;
+}
+function mSuccess(c) {
+  return `
+  <div class="toast">${ic('check-circle')}<div><div class="ts-t">Opinion submitted</div><div class="ts-d">${c.id} recorded and removed from your queue.</div></div></div>
+  <div class="m-detail-card"><div class="success-panel" style="padding:var(--sp-xl) var(--sp-md)">
+    <div class="sp-ic">${ic('clipboard-check')}</div>
+    <h3>Review recorded</h3>
+    <p>Now part of ${c.pseudo}'s lesion history. No diagnosis or treatment was issued.</p>
+    <div class="success-recap"><div class="rc-row"><span class="rc-k">Opinion</span><span class="rc-v">Requires further review</span></div><div class="rc-row"><span class="rc-k">Recorded</span><span class="rc-v">4 Jun · 14:22</span></div></div>
+    <button class="btn btn-primary" style="margin-top:var(--sp-md)">${ic('arrow-right')}Next case</button>
+  </div></div>`;
+}
+
+/* ── Frame + section helpers ─────────────────────────────────────────── */
+function frame(no, title, desc, deviceHtml) {
+  return `
+  <div class="frame">
+    <div class="frame-label"><span class="fl-no">${no}</span><span class="fl-title">${title}</span><span class="fl-desc">${desc}</span></div>
+    <div class="device-desktop"><div class="device-bar"><span class="tl"></span><span class="tl"></span><span class="tl"></span><span class="url">${ic('lock')}app.skinlesionxai.health/review</span></div><div class="device-viewport">${deviceHtml}</div></div>
+  </div>`;
+}
+function mobileFrame(no, title, desc, phoneHtml) {
+  return `
+  <div class="mobile-frame">
+    <div class="frame-label"><span class="fl-no">${no}</span><span class="fl-title">${title}</span><span class="fl-desc">${desc}</span></div>
+    ${phoneHtml}
+  </div>`;
+}
+
+/* ── Build ───────────────────────────────────────────────────────────── */
+const queueFull = CASES;
+const queueAfterSubmit = CASES.filter(c => c.id !== SELECTED_ID);
+
+const masthead = `
+<div class="sc-masthead">
+  <div>
+    <div class="mh-brand">
+      <div class="mh-mark"><div class="mh-reticle"></div></div>
+      <div>
+        <p class="eyebrow">Skin Lesion XAI · Clinical Premium</p>
+        <h1>Doctor review dashboard</h1>
+      </div>
+    </div>
+    <p class="mh-sub">A pseudonymized case-review workspace for clinical professionals. Educational AI explainability and lesion history for professional review — not a diagnosis tool. Every required state is shown below as a labeled frame, desktop and mobile.</p>
+  </div>
+  <div class="mh-legend">
+    <span class="lg-title">AI result band — color + icon + text</span>
+    <span class="lg-row">${bandChip('benign')} low concern</span>
+    <span class="lg-row">${bandChip('monitor')} follow-up suggested</span>
+    <span class="lg-row">${bandChip('review')} professional review</span>
+    <span class="lg-row" style="margin-top:4px">${prioChip('urgent')} ${prioChip('priority')}</span>
+  </div>
+</div>`;
+
+const desktopSection = `
+<div class="sc-section-head"><span class="ix">A</span><h2>Desktop — queue + detail, side by side</h2><span class="rule"></span><span class="sh-meta">1280px · 12-col grid</span></div>
+${frame('01', 'Queue empty', 'No cases pending — the calm, reassuring "all caught up" state.', desktopApp(queueEmpty() + detailPlaceholder(), { notif:0 }))}
+${frame('02', 'Case selected', 'Detail panel fully populated: image + heatmap, AI explanation, patient notes, body-map pin, lab results, opinion form, and review history.', desktopApp(queueColumn(queueFull, SELECTED_ID) + detailPanel(sel, { formState:{ selected:'review', notes:'Border asymmetry consistent with prior capture; diameter increased ~1mm since May.' } })))}
+${frame('03', 'Submitting opinion', 'Submit button enters a loading state; the form is locked to prevent double submission.', desktopApp(queueColumn(queueFull, SELECTED_ID) + detailPanel(sel, { formState:{ selected:'review', disabled:true, loading:true, notes:'Border asymmetry consistent with prior capture; diameter increased ~1mm since May.' } })))}
+${frame('04', 'Opinion submitted', 'Success confirmation; the reviewed case is removed from the queue (5 → 4).', desktopApp(queueColumn(queueAfterSubmit, null) + successPanel(sel)))}
+${frame('05', 'Low heatmap reliability', 'Amber callout when the Grad-CAM explanation is diffuse — paired with an in-viewer flag so color is never the only signal.', desktopApp(queueColumn(queueFull, SELECTED_ID) + detailPanel(sel, { noisy:true, formState:{ selected:'review', notes:'AI heatmap unreliable on this image — opinion based on direct review.' } })))}
+`;
+
+const mobileSection = `
+<div class="sc-section-head"><span class="ix">B</span><h2>Mobile — stacked, single column</h2><span class="rule"></span><span class="sh-meta">390px · drill-in</span></div>
+<div class="mobile-row">
+  ${mobileFrame('01', 'Queue empty', 'All caught up.', mobileShell(mQueueEmpty(), { activeTab:'queue' }))}
+  ${mobileFrame('02', 'Queue list', 'Pseudonymized cases, band + priority.', mobileShell(mQueue(queueFull), { activeTab:'queue' }))}
+  ${mobileFrame('03', 'Case selected', 'Detail stacked top-to-bottom.', mobileShell(mDetail(sel, { formState:{ selected:'review' } }), { back:true, title:sel.id, activeTab:'queue' }))}
+  ${mobileFrame('04', 'Submitting', 'Submit locked + loading.', mobileShell(mDetail(sel, { formState:{ selected:'review', disabled:true, loading:true } }), { back:true, title:sel.id, activeTab:'queue' }))}
+  ${mobileFrame('05', 'Submitted', 'Success; case removed.', mobileShell(mSuccess(sel), { back:true, title:sel.id, activeTab:'queue' }))}
+  ${mobileFrame('06', 'Low heatmap reliability', 'Amber callout + in-viewer flag.', mobileShell(mDetail(sel, { noisy:true, formState:{ selected:'review' } }), { back:true, title:sel.id, activeTab:'queue' }))}
+</div>`;
+
+document.getElementById('sc-wrap').innerHTML = masthead + desktopSection + mobileSection;
+lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+</script>
+</body>
+</html>

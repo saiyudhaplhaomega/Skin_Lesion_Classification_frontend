@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ClinicalAppShell } from "@/components/app/ClinicalAppShell";
+import { BodyMap2D } from "@/components/body-map/BodyMap2D";
 
 export const metadata: Metadata = {
   title: "Body Map",
@@ -10,12 +12,16 @@ export const metadata: Metadata = {
 
 export default function BodyMapPage() {
   return (
-    <main className="dashboard-shell">
-      <section className="dashboard-header">
-        <p className="eyebrow">Body Map</p>
-        <h1>Body Location Tracking</h1>
-        <p>Location submitted by patient - awaiting doctor verification.</p>
-      </section>
-    </main>
+    <ClinicalAppShell
+      eyebrow="Body map"
+      title="Body location tracking"
+      lead="Keep lesion locations, patient notes, and doctor-verification status in one privacy-safe visual map."
+      actions={[
+        { href: "/lesions", label: "Lesion profiles", variant: "ghost" },
+        { href: "/analyze", label: "Add photo" },
+      ]}
+    >
+      <BodyMap2D />
+    </ClinicalAppShell>
   );
 }

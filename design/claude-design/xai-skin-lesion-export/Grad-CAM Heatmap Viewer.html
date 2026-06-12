@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grad-CAM Heatmap Viewer — Skin Lesion XAI</title>
+<link rel="stylesheet" href="assets/colors_and_type.css">
+<link rel="stylesheet" href="assets/viewer.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<main class="page">
+
+  <header class="page-head">
+    <p class="eyebrow"><span class="app-icon" data-i="layers"></span>Grad-CAM explanation · educational only</p>
+    <h1>Grad-CAM heatmap viewer</h1>
+    <p>The explanation heatmap shows which regions of the image the model weighted most when forming its educational prediction. Every state below is a labeled frame. Status is always paired with an icon and text, never color alone, and the safety disclaimer stays visible throughout. This is not a diagnosis tool.</p>
+  </header>
+
+  <!-- ════════════════════════════ DESKTOP ════════════════════════════ -->
+  <div class="section-eyebrow">
+    <h2>Desktop — split view</h2>
+    <span class="hint">Image stage left, explanation panel right · 1280px grid</span>
+  </div>
+
+  <!-- ░░ Loading ░░ -->
+  <section class="frame">
+    <div class="frame-label">
+      <span class="frame-tag">STATE 01</span>
+      <span class="ft-title">Loading — generating heatmap</span>
+      <span class="ft-desc">calm expectation, no countdown</span>
+    </div>
+    <div class="surface">
+      <div class="surface-bar">
+        <span class="tl"></span>
+        <span class="crumb"><span class="app-icon" data-i="scan-line"></span>Analyze · lesion image</span>
+      </div>
+      <div class="surface-body">
+        <div class="split">
+          <div class="loading-stage" role="status" aria-live="polite">
+            <div class="scan"></div>
+            <div class="lc">
+              <div class="spinner" aria-hidden="true"></div>
+              <div class="lp">Analyzing your image…</div>
+              <div class="ls">This typically takes 10–20 seconds</div>
+              <div class="prog"><div class="fill"></div></div>
+            </div>
+          </div>
+          <div class="panel skel-panel" aria-hidden="true">
+            <div class="card" style="padding:var(--sp-md)">
+              <div class="skel" style="height:18px;width:55%"></div>
+              <div class="skel" style="height:12px;width:90%;margin-top:12px"></div>
+              <div class="skel" style="height:12px;width:75%;margin-top:8px"></div>
+            </div>
+            <div class="card" style="padding:var(--sp-md)">
+              <div class="skel" style="height:14px;width:45%"></div>
+              <div class="skel" style="height:8px;width:100%;margin-top:12px;border-radius:100px"></div>
+            </div>
+            <div class="card" style="padding:var(--sp-md)">
+              <div class="skel" style="height:12px;width:100%"></div>
+              <div class="skel" style="height:12px;width:95%;margin-top:8px"></div>
+              <div class="skel" style="height:12px;width:60%;margin-top:8px"></div>
+            </div>
+            <div class="disclaimer" aria-hidden="false">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>This platform is not a medical diagnosis tool.</strong> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ Result — clean ░░ -->
+  <section class="frame">
+    <div class="frame-label">
+      <span class="frame-tag green">STATE 02</span>
+      <span class="ft-title">Result — heatmap reliable (clean)</span>
+      <span class="ft-desc">activation concentrated on the lesion</span>
+    </div>
+    <div class="surface">
+      <div class="surface-bar">
+        <span class="tl"></span>
+        <span class="crumb"><span class="app-icon" data-i="layers"></span>Analyze · educational result</span>
+      </div>
+      <div class="surface-body">
+        <div class="split">
+          <div class="viewer">
+            <div class="viewer-stage" data-mode="overlay" style="--heat-op:.65">
+              <div class="skin"><div class="derm"></div><div class="lesion"></div></div>
+              <div class="heat-field"></div>
+              <div class="heat clean"></div>
+              <div class="focus-ring"></div>
+              <div class="scale-label"><span class="bar"></span>low → high activation</div>
+            </div>
+            <div class="viewer-bar">
+              <div class="seg" role="group" aria-label="View mode">
+                <button type="button" data-mode="original"><span class="app-icon" data-i="image"></span>Original</button>
+                <button type="button" data-mode="heatmap"><span class="app-icon" data-i="layers"></span>Heatmap</button>
+                <button type="button" data-mode="overlay" aria-pressed="true"><span class="app-icon" data-i="blend"></span>Overlay</button>
+              </div>
+              <label class="opacity-ctrl">Opacity
+                <input type="range" min="0" max="100" value="65" aria-label="Heatmap overlay opacity">
+                <span class="val">65%</span>
+              </label>
+            </div>
+            <div class="viewer-meta">
+              <span class="vm"><span class="app-icon" data-i="map-pin"></span>Upper back · left</span>
+              <span class="vm"><span class="app-icon" data-i="calendar"></span>2026-06-02</span>
+              <span class="vm"><span class="app-icon" data-i="hash"></span>CASE-7F2A</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="band green">
+              <div class="bt"><span class="app-icon" data-i="check-circle"></span>Low concern</div>
+              <p class="bd">Educational model output only. The areas of interest fall on the lesion itself and no features were weighted unusually. This is not a diagnosis — share it with a healthcare professional for review.</p>
+            </div>
+            <div class="card conf">
+              <div class="conf-top">
+                <span class="cl">Calibrated confidence</span>
+                <span class="cv">0.78</span>
+              </div>
+              <div class="track"><div class="fl" style="width:78%"></div></div>
+              <div class="calib"><span class="app-icon" data-i="thermometer"></span>Temperature-scaled — adjusted for reliability, not raw softmax.</div>
+            </div>
+            <div class="card expl">
+              <h4><span class="app-icon" data-i="sparkles"></span>AI explanation<span class="tag">Educational</span></h4>
+              <p>The explanation heatmap concentrates on the central pigmented area rather than the surrounding skin, which suggests the prediction is grounded in the lesion. Borders read as fairly regular and coloration as even. A good next step is to re-photograph in about three months to track any change.</p>
+            </div>
+            <div class="quality clean">
+              <div class="qi"><span class="app-icon" data-i="circle-check"></span></div>
+              <div>
+                <div class="ql">Heatmap quality</div>
+                <div class="qv">Clean</div>
+                <div class="qd">Activation is focused and stable — the explanation is reliable.</div>
+              </div>
+            </div>
+            <div class="callout">
+              <h5><span class="app-icon" data-i="info"></span>How to read this</h5>
+              <ul>
+                <li><span class="app-icon" data-i="target"></span>If the heatmap activates on healthy skin rather than the lesion, the prediction may be unreliable.</li>
+                <li><span class="app-icon" data-i="stethoscope"></span>Always consult a healthcare professional for clinical decisions.</li>
+              </ul>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary"><span class="app-icon" data-i="check"></span>Save to timeline</button>
+              <button class="btn btn-secondary"><span class="app-icon" data-i="stethoscope"></span>Request review</button>
+            </div>
+            <div class="disclaimer">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>This platform is not a medical diagnosis tool.</strong> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ Result — noisy ░░ -->
+  <section class="frame">
+    <div class="frame-label">
+      <span class="frame-tag amber">STATE 03</span>
+      <span class="ft-title">Result — unusual heatmap (noisy)</span>
+      <span class="ft-desc">activation strays onto healthy skin · amber warning</span>
+    </div>
+    <div class="surface">
+      <div class="surface-bar">
+        <span class="tl"></span>
+        <span class="crumb"><span class="app-icon" data-i="layers"></span>Analyze · educational result</span>
+      </div>
+      <div class="surface-body">
+        <div class="split">
+          <div class="viewer">
+            <div class="viewer-stage" data-mode="overlay" style="--heat-op:.7">
+              <div class="skin"><div class="derm"></div><div class="lesion"></div></div>
+              <div class="heat-field"></div>
+              <div class="heat noisy"></div>
+              <div class="focus-ring"></div>
+              <div class="scale-label"><span class="bar"></span>low → high activation</div>
+            </div>
+            <div class="viewer-bar">
+              <div class="seg" role="group" aria-label="View mode">
+                <button type="button" data-mode="original"><span class="app-icon" data-i="image"></span>Original</button>
+                <button type="button" data-mode="heatmap"><span class="app-icon" data-i="layers"></span>Heatmap</button>
+                <button type="button" data-mode="overlay" aria-pressed="true"><span class="app-icon" data-i="blend"></span>Overlay</button>
+              </div>
+              <label class="opacity-ctrl">Opacity
+                <input type="range" min="0" max="100" value="70" aria-label="Heatmap overlay opacity">
+                <span class="val">70%</span>
+              </label>
+            </div>
+            <div class="viewer-meta">
+              <span class="vm"><span class="app-icon" data-i="map-pin"></span>Right forearm</span>
+              <span class="vm"><span class="app-icon" data-i="calendar"></span>2026-06-04</span>
+              <span class="vm"><span class="app-icon" data-i="hash"></span>CASE-91C0</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="band amber">
+              <div class="bt"><span class="app-icon" data-i="alert-triangle"></span>Review recommended</div>
+              <p class="bd">The heatmap shows unusual patterns — activation is spread across healthy skin as well as the lesion. Treat this educational output with extra caution and have a professional review the image.</p>
+            </div>
+            <div class="card conf">
+              <div class="conf-top">
+                <span class="cl">Calibrated confidence</span>
+                <span class="cv amber">0.61</span>
+              </div>
+              <div class="track"><div class="fl amber" style="width:61%"></div></div>
+              <div class="calib"><span class="app-icon" data-i="thermometer"></span>Temperature-scaled. Lower confidence plus a noisy heatmap means the result is less dependable.</div>
+            </div>
+            <div class="card expl">
+              <h4><span class="app-icon" data-i="sparkles"></span>AI explanation<span class="tag">Educational</span></h4>
+              <p>Several areas of interest fall outside the lesion, on surrounding healthy skin. When the model attends to regions away from the lesion, the explanation is harder to trust and the prediction may not be grounded in the right features. Consider re-capturing the image with even lighting and a clear, centered framing.</p>
+            </div>
+            <div class="quality noisy">
+              <div class="qi"><span class="app-icon" data-i="alert-triangle"></span></div>
+              <div>
+                <div class="ql">Heatmap quality</div>
+                <div class="qv">Noisy</div>
+                <div class="qd">Activation is scattered onto healthy skin — the explanation is unreliable.</div>
+              </div>
+            </div>
+            <div class="callout">
+              <h5><span class="app-icon" data-i="info"></span>How to read this</h5>
+              <ul>
+                <li><span class="app-icon" data-i="target"></span>If the heatmap activates on healthy skin rather than the lesion, the prediction may be unreliable.</li>
+                <li><span class="app-icon" data-i="stethoscope"></span>Always consult a healthcare professional for clinical decisions.</li>
+              </ul>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary"><span class="app-icon" data-i="stethoscope"></span>Request professional review</button>
+              <button class="btn btn-secondary"><span class="app-icon" data-i="rotate-ccw"></span>Re-capture image</button>
+            </div>
+            <div class="disclaimer">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>This platform is not a medical diagnosis tool.</strong> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ Error ░░ -->
+  <section class="frame">
+    <div class="frame-label">
+      <span class="frame-tag red">STATE 04</span>
+      <span class="ft-title">Error — heatmap could not be generated</span>
+      <span class="ft-desc">explains, reassures, offers a path forward — no error code</span>
+    </div>
+    <div class="surface">
+      <div class="surface-bar">
+        <span class="tl"></span>
+        <span class="crumb"><span class="app-icon" data-i="scan-line"></span>Analyze · interrupted</span>
+      </div>
+      <div class="surface-body">
+        <div class="split">
+          <div class="error-stage" role="alert">
+            <div class="ei"><span class="app-icon" data-i="alert-octagon"></span></div>
+            <div class="et">Analysis interrupted</div>
+            <div class="ed">Something unexpected happened while generating the explanation heatmap. Your image has been saved and nothing was lost.</div>
+            <span class="saved"><span class="app-icon" data-i="check"></span>Image saved to your timeline</span>
+          </div>
+          <div class="panel">
+            <div class="band amber">
+              <div class="bt"><span class="app-icon" data-i="alert-triangle"></span>No result to show</div>
+              <p class="bd">The model did not finish, so there is no prediction or heatmap for this image yet. You can try again when you’re ready — this won’t affect your saved history.</p>
+            </div>
+            <div class="card expl">
+              <h4><span class="app-icon" data-i="list-checks"></span>What you can do</h4>
+              <p>Check that the image is in focus and well lit, then run the analysis again. If it keeps interrupting, you can still request a professional review of the saved image directly.</p>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary"><span class="app-icon" data-i="rotate-ccw"></span>Try again</button>
+              <button class="btn btn-secondary"><span class="app-icon" data-i="stethoscope"></span>Request review</button>
+            </div>
+            <div class="callout">
+              <h5><span class="app-icon" data-i="info"></span>Good to know</h5>
+              <ul>
+                <li><span class="app-icon" data-i="shield-check"></span>Your saved images and history are never affected by a failed analysis.</li>
+                <li><span class="app-icon" data-i="stethoscope"></span>Always consult a healthcare professional for clinical decisions.</li>
+              </ul>
+            </div>
+            <div class="disclaimer">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>This platform is not a medical diagnosis tool.</strong> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░ Comparison ░░ -->
+  <section class="frame">
+    <div class="frame-label">
+      <span class="frame-tag">STATE 05</span>
+      <span class="ft-title">Comparison — same lesion, two dates</span>
+      <span class="ft-desc">synced controls drive both images</span>
+    </div>
+    <div class="surface">
+      <div class="surface-bar">
+        <span class="tl"></span>
+        <span class="crumb"><span class="app-icon" data-i="history"></span>Lesion history · compare</span>
+      </div>
+      <div class="surface-body">
+        <div class="split">
+          <div class="viewer">
+            <div class="viewer-bar">
+              <div class="seg" role="group" aria-label="View mode for both images">
+                <button type="button" data-mode="original"><span class="app-icon" data-i="image"></span>Original</button>
+                <button type="button" data-mode="heatmap"><span class="app-icon" data-i="layers"></span>Heatmap</button>
+                <button type="button" data-mode="overlay" aria-pressed="true"><span class="app-icon" data-i="blend"></span>Overlay</button>
+              </div>
+              <label class="opacity-ctrl">Opacity
+                <input type="range" min="0" max="100" value="65" aria-label="Heatmap overlay opacity for both images">
+                <span class="val">65%</span>
+              </label>
+            </div>
+            <div class="compare" style="padding:var(--sp-md)">
+              <div class="compare-col">
+                <div class="cc-head"><span class="cc-date">2026-03-02</span><span class="cc-rel">3 months ago</span></div>
+                <div class="viewer-stage" data-mode="overlay" style="--heat-op:.65;border-radius:var(--radius-lg)">
+                  <div class="skin"><div class="derm"></div><div class="lesion" style="width:38%;height:36%"></div></div>
+                  <div class="heat-field"></div>
+                  <div class="heat clean" style="background:radial-gradient(22% 21% at 49% 46%,rgba(255,42,28,.95) 0%,rgba(255,120,24,.9) 28%,rgba(252,214,38,.74) 50%,rgba(86,206,96,.46) 70%,rgba(38,118,210,.3) 86%,transparent 100%)"></div>
+                  <div class="scale-label"><span class="bar"></span>activation</div>
+                </div>
+              </div>
+              <div class="compare-col">
+                <div class="cc-head"><span class="cc-date">2026-06-02</span><span class="cc-rel">latest</span></div>
+                <div class="viewer-stage" data-mode="overlay" style="--heat-op:.65;border-radius:var(--radius-lg)">
+                  <div class="skin"><div class="derm"></div><div class="lesion" style="width:52%;height:50%"></div></div>
+                  <div class="heat-field"></div>
+                  <div class="heat clean"></div>
+                  <div class="scale-label"><span class="bar"></span>activation</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="band amber">
+              <div class="bt"><span class="app-icon" data-i="trending-up"></span>Change since last visit</div>
+              <p class="bd">The model highlights a larger area of interest in the more recent image. Visible change over time is worth showing to a healthcare professional — it is not a diagnosis on its own.</p>
+            </div>
+            <div class="card delta-card">
+              <div class="di"><span class="app-icon" data-i="ruler"></span></div>
+              <div>
+                <div class="dt">Area of interest appears larger</div>
+                <div class="dd">Educational estimate from the explanation heatmaps across both visits.</div>
+                <div class="delta-metrics">
+                  <span class="dm">Est. diameter<b class="amber">+2.4&nbsp;mm</b></span>
+                  <span class="dm">Activation spread<b>Focused</b></span>
+                  <span class="dm">Days between<b>92</b></span>
+                </div>
+              </div>
+            </div>
+            <div class="quality clean">
+              <div class="qi"><span class="app-icon" data-i="circle-check"></span></div>
+              <div>
+                <div class="ql">Heatmap quality</div>
+                <div class="qv">Clean · both</div>
+                <div class="qd">Activation stays on the lesion in both images, so the comparison is dependable.</div>
+              </div>
+            </div>
+            <div class="callout">
+              <h5><span class="app-icon" data-i="info"></span>How to read this</h5>
+              <ul>
+                <li><span class="app-icon" data-i="target"></span>If the heatmap activates on healthy skin rather than the lesion, the prediction may be unreliable.</li>
+                <li><span class="app-icon" data-i="stethoscope"></span>Always consult a healthcare professional for clinical decisions.</li>
+              </ul>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary"><span class="app-icon" data-i="stethoscope"></span>Share comparison for review</button>
+            </div>
+            <div class="disclaimer">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>This platform is not a medical diagnosis tool.</strong> It provides educational AI-supported information and helps organize lesion history for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ MOBILE ════════════════════════════ -->
+  <div class="section-eyebrow">
+    <h2>Mobile — stacked view</h2>
+    <span class="hint">Image stage, controls, then panel · disclaimer pinned</span>
+  </div>
+
+  <div class="devices">
+
+    <!-- Mobile: clean -->
+    <div class="device">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-status"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+          <div class="phone-top">
+            <div class="bk"><span class="app-icon" data-i="chevron-left"></span></div>
+            <div><div class="pt-title">Educational result</div><div class="pt-sub">CASE-7F2A · upper back</div></div>
+          </div>
+          <div class="phone-scroll">
+            <div class="viewer">
+              <div class="viewer-stage" data-mode="overlay" style="--heat-op:.65">
+                <div class="skin"><div class="derm"></div><div class="lesion"></div></div>
+                <div class="heat-field"></div>
+                <div class="heat clean"></div>
+                <div class="scale-label"><span class="bar"></span>activation</div>
+              </div>
+              <div class="viewer-bar">
+                <div class="seg" role="group" aria-label="View mode">
+                  <button type="button" data-mode="original">Original</button>
+                  <button type="button" data-mode="heatmap">Heatmap</button>
+                  <button type="button" data-mode="overlay" aria-pressed="true">Overlay</button>
+                </div>
+                <label class="opacity-ctrl">Opacity
+                  <input type="range" min="0" max="100" value="65" aria-label="Heatmap overlay opacity">
+                  <span class="val">65%</span>
+                </label>
+              </div>
+            </div>
+            <div class="band green">
+              <div class="bt"><span class="app-icon" data-i="check-circle"></span>Low concern</div>
+              <p class="bd">Areas of interest fall on the lesion. Educational only — not a diagnosis.</p>
+            </div>
+            <div class="card conf">
+              <div class="conf-top"><span class="cl">Calibrated confidence</span><span class="cv">0.78</span></div>
+              <div class="track"><div class="fl" style="width:78%"></div></div>
+              <div class="calib"><span class="app-icon" data-i="thermometer"></span>Temperature-scaled, not raw softmax.</div>
+            </div>
+            <div class="quality clean">
+              <div class="qi"><span class="app-icon" data-i="circle-check"></span></div>
+              <div><div class="ql">Heatmap quality</div><div class="qv">Clean</div></div>
+            </div>
+            <div class="disclaimer phone-sticky">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>Not a medical diagnosis tool.</strong> Educational AI-supported information for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="device-cap"><b>Result — clean</b>Stacked: image, controls, panel</div>
+    </div>
+
+    <!-- Mobile: noisy -->
+    <div class="device">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-status"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+          <div class="phone-top">
+            <div class="bk"><span class="app-icon" data-i="chevron-left"></span></div>
+            <div><div class="pt-title">Educational result</div><div class="pt-sub">CASE-91C0 · right forearm</div></div>
+          </div>
+          <div class="phone-scroll">
+            <div class="viewer">
+              <div class="viewer-stage" data-mode="overlay" style="--heat-op:.7">
+                <div class="skin"><div class="derm"></div><div class="lesion"></div></div>
+                <div class="heat-field"></div>
+                <div class="heat noisy"></div>
+                <div class="scale-label"><span class="bar"></span>activation</div>
+              </div>
+              <div class="viewer-bar">
+                <div class="seg" role="group" aria-label="View mode">
+                  <button type="button" data-mode="original">Original</button>
+                  <button type="button" data-mode="heatmap">Heatmap</button>
+                  <button type="button" data-mode="overlay" aria-pressed="true">Overlay</button>
+                </div>
+                <label class="opacity-ctrl">Opacity
+                  <input type="range" min="0" max="100" value="70" aria-label="Heatmap overlay opacity">
+                  <span class="val">70%</span>
+                </label>
+              </div>
+            </div>
+            <div class="band amber">
+              <div class="bt"><span class="app-icon" data-i="alert-triangle"></span>Review recommended</div>
+              <p class="bd">Heatmap shows unusual patterns on healthy skin. Treat with caution.</p>
+            </div>
+            <div class="quality noisy">
+              <div class="qi"><span class="app-icon" data-i="alert-triangle"></span></div>
+              <div><div class="ql">Heatmap quality</div><div class="qv">Noisy</div><div class="qd">Activation strays off the lesion — unreliable.</div></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary"><span class="app-icon" data-i="stethoscope"></span>Request review</button>
+            </div>
+            <div class="disclaimer phone-sticky">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>Not a medical diagnosis tool.</strong> Educational AI-supported information for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="device-cap"><b>Result — noisy</b>Amber warning, icon + text</div>
+    </div>
+
+    <!-- Mobile: loading -->
+    <div class="device">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-status"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+          <div class="phone-top">
+            <div class="bk"><span class="app-icon" data-i="chevron-left"></span></div>
+            <div><div class="pt-title">Analyzing</div><div class="pt-sub">Generating heatmap…</div></div>
+          </div>
+          <div class="phone-scroll">
+            <div class="loading-stage" role="status" aria-live="polite">
+              <div class="scan"></div>
+              <div class="lc">
+                <div class="spinner" aria-hidden="true"></div>
+                <div class="lp">Analyzing your image…</div>
+                <div class="ls">This typically takes 10–20 seconds</div>
+                <div class="prog"><div class="fill"></div></div>
+              </div>
+            </div>
+            <div class="card" style="padding:var(--sp-md)">
+              <div class="skel" style="height:14px;width:55%"></div>
+              <div class="skel" style="height:11px;width:90%;margin-top:10px"></div>
+              <div class="skel" style="height:11px;width:70%;margin-top:7px"></div>
+            </div>
+            <div class="disclaimer phone-sticky">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>Not a medical diagnosis tool.</strong> Educational AI-supported information for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="device-cap"><b>Loading</b>Disclaimer visible while waiting</div>
+    </div>
+
+    <!-- Mobile: error -->
+    <div class="device">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-status"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+          <div class="phone-top">
+            <div class="bk"><span class="app-icon" data-i="chevron-left"></span></div>
+            <div><div class="pt-title">Analysis interrupted</div><div class="pt-sub">No result yet</div></div>
+          </div>
+          <div class="phone-scroll">
+            <div class="error-stage" role="alert" style="aspect-ratio:1/1">
+              <div class="ei"><span class="app-icon" data-i="alert-octagon"></span></div>
+              <div class="et">Analysis interrupted</div>
+              <div class="ed">Something unexpected happened. Your image has been saved.</div>
+              <span class="saved"><span class="app-icon" data-i="check"></span>Image saved</span>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary"><span class="app-icon" data-i="rotate-ccw"></span>Try again</button>
+            </div>
+            <button class="btn btn-secondary" style="width:100%"><span class="app-icon" data-i="stethoscope"></span>Request review instead</button>
+            <div class="disclaimer phone-sticky">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>Not a medical diagnosis tool.</strong> Educational AI-supported information for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="device-cap"><b>Error</b>Reassures effort isn’t lost</div>
+    </div>
+
+    <!-- Mobile: comparison -->
+    <div class="device">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-status"><span>9:41</span><span class="dots"><span></span><span></span><span></span></span></div>
+          <div class="phone-top">
+            <div class="bk"><span class="app-icon" data-i="chevron-left"></span></div>
+            <div><div class="pt-title">Compare visits</div><div class="pt-sub">Same lesion · 2 dates</div></div>
+          </div>
+          <div class="phone-scroll">
+            <div class="viewer">
+              <div class="viewer-bar">
+                <div class="seg" role="group" aria-label="View mode for both images">
+                  <button type="button" data-mode="original">Original</button>
+                  <button type="button" data-mode="heatmap">Heatmap</button>
+                  <button type="button" data-mode="overlay" aria-pressed="true">Overlay</button>
+                </div>
+              </div>
+              <div style="padding:var(--sp-md);display:flex;flex-direction:column;gap:var(--sp-md)">
+                <div class="compare-col">
+                  <div class="cc-head"><span class="cc-date">2026-03-02</span><span class="cc-rel">3 months ago</span></div>
+                  <div class="viewer-stage" data-mode="overlay" style="--heat-op:.65;border-radius:var(--radius-lg)">
+                    <div class="skin"><div class="derm"></div><div class="lesion" style="width:38%;height:36%"></div></div>
+                    <div class="heat-field"></div>
+                    <div class="heat clean" style="background:radial-gradient(22% 21% at 49% 46%,rgba(255,42,28,.95) 0%,rgba(255,120,24,.9) 28%,rgba(252,214,38,.74) 50%,rgba(86,206,96,.46) 70%,transparent 100%)"></div>
+                  </div>
+                </div>
+                <div class="compare-col">
+                  <div class="cc-head"><span class="cc-date">2026-06-02</span><span class="cc-rel">latest</span></div>
+                  <div class="viewer-stage" data-mode="overlay" style="--heat-op:.65;border-radius:var(--radius-lg)">
+                    <div class="skin"><div class="derm"></div><div class="lesion" style="width:52%;height:50%"></div></div>
+                    <div class="heat-field"></div>
+                    <div class="heat clean"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="band amber">
+              <div class="bt"><span class="app-icon" data-i="trending-up"></span>Change since last visit</div>
+              <p class="bd">Larger area of interest in the latest image. Show to a professional.</p>
+            </div>
+            <div class="disclaimer phone-sticky">
+              <span class="app-icon" data-i="shield-check"></span>
+              <p><strong>Not a medical diagnosis tool.</strong> Educational AI-supported information for professional review.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="device-cap"><b>Comparison</b>Side-by-side stacks vertically</div>
+    </div>
+
+  </div>
+
+</main>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#0D1014"/>
+    <circle cx="50" cy="48" r="22" fill="none" stroke="#2980B2" stroke-width="3"/>
+    <circle cx="50" cy="48" r="9" fill="#1A5F7A"/>
+    <circle cx="50" cy="48" r="3.5" fill="#F5F6F7"/>
+  </svg>
+</template>
+
+<script>
+  // Inject Lucide icons into .app-icon[data-i] wrappers
+  document.querySelectorAll('.app-icon[data-i]').forEach(function (el) {
+    el.innerHTML = '<i data-lucide="' + el.dataset.i + '"></i>';
+  });
+  if (window.lucide) lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+
+  // Wire each .viewer: segmented mode + opacity drive all stages inside it
+  document.querySelectorAll('.viewer').forEach(function (viewer) {
+    var stages = viewer.querySelectorAll('.viewer-stage');
+    var segBtns = viewer.querySelectorAll('.seg button[data-mode]');
+    var opWrap = viewer.querySelector('.opacity-ctrl');
+    var range = viewer.querySelector('input[type="range"]');
+    var val = viewer.querySelector('.opacity-ctrl .val');
+
+    function setMode(mode) {
+      stages.forEach(function (s) { s.setAttribute('data-mode', mode); });
+      segBtns.forEach(function (b) {
+        var on = b.dataset.mode === mode;
+        if (on) b.setAttribute('aria-pressed', 'true'); else b.removeAttribute('aria-pressed');
+      });
+      if (opWrap) {
+        var disabled = mode !== 'overlay';
+        opWrap.classList.toggle('disabled', disabled);
+        if (range) range.disabled = disabled;
+      }
+    }
+    segBtns.forEach(function (b) {
+      b.addEventListener('click', function () { setMode(b.dataset.mode); });
+    });
+    if (range) {
+      range.addEventListener('input', function () {
+        var v = +range.value;
+        stages.forEach(function (s) { s.style.setProperty('--heat-op', v / 100); });
+        if (val) val.textContent = v + '%';
+      });
+    }
+  });
+</script>
+</body>
+</html>

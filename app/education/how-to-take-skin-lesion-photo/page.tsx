@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClinicalAppShell, SectionCard, StatusPill } from "@/components/app/ClinicalAppShell";
 
 export const metadata: Metadata = {
   title: "How to Take a Skin Lesion Photo",
@@ -11,19 +12,28 @@ export const metadata: Metadata = {
 
 export default function HowToTakeSkinLesionPhotoPage() {
   return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">How to Take a Skin Lesion Photo</h1>
-        <p className="text-gray-600">
-          Use steady lighting, focus, consistent distance, minimal glare, and
-          the same angle over time. Do not include face or identifying details.
-        </p>
-        <p className="text-gray-600">
-          This platform is not a medical diagnosis tool. It provides
-          educational AI-supported information and helps organize lesion
-          history for professional review.
-        </p>
+    <ClinicalAppShell
+      eyebrow="Education"
+      title="How to take a skin lesion photo"
+      lead="Use consistent, privacy-safe photos so your timeline is easier to compare and your doctor has cleaner context."
+      actions={[
+        { href: "/education", label: "Education hub", variant: "ghost" },
+        { href: "/analyze", label: "Upload photo" },
+      ]}
+    >
+      <div className="report-builder">
+        {[
+          ["Lighting", "Use bright, even light. Avoid flash glare and deep shadows.", "ok"],
+          ["Focus", "Hold the camera steady and retake if the lesion edge is blurry.", "warn"],
+          ["Framing", "Center the lesion and include a little surrounding skin.", "info"],
+          ["Privacy", "Avoid face, tattoos, documents, mirrors, or other identifying details.", "warn"],
+        ].map(([title, body, tone]) => (
+          <SectionCard key={title} title={title} eyebrow="Photo check">
+            <p>{body}</p>
+            <StatusPill tone={tone as "ok" | "warn" | "info"}>{title}</StatusPill>
+          </SectionCard>
+        ))}
       </div>
-    </main>
+    </ClinicalAppShell>
   );
 }
