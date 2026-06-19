@@ -13,3 +13,6 @@ pnpm-debug.log*
 # Local docs and design planning material
 *.md
 design-specs/
+
+# Archives
+*.zip
